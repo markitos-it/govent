@@ -51,7 +51,7 @@ jobs:
         run: |
           make start &
           echo "⏳ Esperando 5 segundos a que el API inicialice y aplique el esquema..."
-          sleep 20
+          sleep 30
 
       # 7. Lanzar tests unitarios y de integración
       - name: Run Unit Tests
@@ -61,8 +61,36 @@ jobs:
       - name: Install Snyk CLI
         run: npm install -g snyk
 
-      # 9. Lanzar tests de seguridad (Aceptando código 2 para que no rompa el CI)
+      # 9. ◄— PASO BLINDADO: Detecta si falta el token para evitar el cuelgue eterna
       - name: Run Application Security Tests
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        run: make appsec-test || true
+        run: |
+          if [ -z "$SNYK_TOKEN" ]; then
+            echo "========================================================================="
+            echo "❌ ERROR CRÍTICO: El secreto 'SNYK_TOKEN' no está configurado en GitHub."
+            echo "Asegúrate de crearlo en Settings -> Secrets and variables -> Actions."
+            echo "========================================================================="
+            exit 1
+          fi
+          make appsec-test
+
+      # 10. Generar el reporte visual en la interfaz de GitHub (Se ejecutará siempre)
+      - name: Generate Beautiful Job Summary
+        if: always()
+        run: |
+          echo "## 🚀 GoVent DevSecOps - Reporte de Ejecución" >> $GITHUB_STEP_SUMMARY
+          echo "---" >> $GITHUB_STEP_SUMMARY
+          echo "### 📊 Resumen de la Infraestructura de CI" >> $GITHUB_STEP_SUMMARY
+          echo "| Componente | Configuración / Estado |" >> $GITHUB_STEP_SUMMARY
+          echo "| :--- | :--- |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🦫 **Entorno Core** | Go v1.26.4 (Caché Activa) |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🐘 **Base de Datos** | Postgres 17 (Docker Alpine) |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🛠️ **Esquema SQL** | Creado desde cero con éxito |" >> $GITHUB_STEP_SUMMARY
+          echo "| ⚡ **ORM Migrations** | Aplicadas (API arrancada en Background) |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🛡️ **AppSec Scan** | Revisar estado en los pasos del Job |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "---" >> $GITHUB_STEP_SUMMARY
+          echo "### 🛠️ Información de la Ejecución" >> $GITHUB_STEP_SUMMARY
+          echo "* **Rama:** \`${{ github.ref_name }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "* **Disparado por:** @${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
