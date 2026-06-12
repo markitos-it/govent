@@ -36,13 +36,18 @@ jobs:
           done
           echo "✅ ¡Postgres está 100% operativo!"
 
-      # 5. Crear la Base de Datos desde el host forzando la conexión por Red (TCP)
+      # 5. Limpieza previa y creación del esquema
       - name: Create Database and Schema
         env:
           PGHOST: 127.0.0.1
           PGUSER: admin
           PGPASSWORD: admin
-        run: make db-create
+        run: |
+          # Forzamos el borrado de la BD automática para que 'make db-create' no choque al intentar crearla de nuevo
+          docker exec -i govent-postgres psql -U admin -d postgres -c "DROP DATABASE IF EXISTS govent;"
+          
+          # Ahora sí, ejecutamos tu script original de creación
+          make db-create
 
       # 6. Lanzar tests unitarios y de integración
       - name: Run Unit Tests
