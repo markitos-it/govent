@@ -2,18 +2,18 @@ package types
 
 import "govent/internal/domain/shared"
 
-type EventId struct {
+type SharedId struct {
 	value string
 }
 
-func NewEventId(value string) (*EventId, error) {
+func NewSharedId(value string) (*SharedId, error) {
 	if shared.IsUUIDv4(value) {
-		return &EventId{value}, nil
+		return &SharedId{value}, nil
 	}
 
 	return nil, shared.ErrEventBadRequest
 }
 
-func (b *EventId) Value() string {
+func (b *SharedId) Value() string {
 	return b.value
 }

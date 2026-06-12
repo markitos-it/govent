@@ -25,7 +25,7 @@ func NewEventOneService(repository types.EventRepository) EventOneService {
 }
 
 func (s EventOneService) Do(ctx context.Context, request EventOneRequest) (*EventOneResponse, error) {
-	securedId, err := types.NewEventId(request.Id)
+	securedId, err := types.NewSharedId(request.Id)
 	if err != nil {
 		return nil, err
 	}

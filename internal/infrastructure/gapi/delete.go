@@ -11,7 +11,7 @@ import (
 )
 
 func (s *Server) DeleteEvent(ctx context.Context, in *DeleteEventRequest) (*DeleteEventResponse, error) {
-	if _, err := types.NewEventId(in.Id); err != nil {
+	if _, err := types.NewSharedId(in.Id); err != nil {
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 

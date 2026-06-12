@@ -75,7 +75,7 @@ func createPersistedRandomEvent() *types.Event {
 }
 
 func deletePersistedRandomEvent(eventId string) {
-	id, err := types.NewEventId(eventId)
+	id, err := types.NewSharedId(eventId)
 	if err != nil {
 		return
 	}

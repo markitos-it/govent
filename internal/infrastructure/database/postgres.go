@@ -3,11 +3,13 @@ package database
 import (
 	"context"
 	"errors"
-
+	"fmt"
 	"govent/internal/domain/shared"
 	"govent/internal/domain/types"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type EventPostgresRepository struct {
@@ -19,10 +21,39 @@ func NewEventPostgresRepository(db *gorm.DB) types.EventRepository {
 }
 
 func (r *EventPostgresRepository) Create(ctx context.Context, event *types.Event) error {
-	return r.db.WithContext(ctx).Create(event).Error
+	return r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+
+		if err := tx.Create(event).Error; err != nil {
+			return fmt.Errorf("error inserting main event: %w", err)
+		}
+
+		var subscribers []string
+		err := tx.Table("subscriptions").
+			Where("event_name = ? AND source = ?", event.Name, event.Source).
+			Pluck("subscriber_name", &subscribers).Error
+
+		if err != nil {
+			return fmt.Errorf("error searching subscriptions: %w", err)
+		}
+
+		for _, subscriber := range subscribers {
+			queueId := uuid.New().String()
+
+			msg, err := types.NewQueueMessage(queueId, subscriber, event.Id)
+			if err != nil {
+				return fmt.Errorf("error al construir QueueMessage: %w", err)
+			}
+
+			if err := tx.Table("queue").Create(msg).Error; err != nil {
+				return fmt.Errorf("error al insertar en la cola de %s: %w", subscriber, err)
+			}
+		}
+
+		return nil
+	})
 }
 
-func (r *EventPostgresRepository) One(ctx context.Context, id *types.EventId) (*types.Event, error) {
+func (r *EventPostgresRepository) One(ctx context.Context, id *types.SharedId) (*types.Event, error) {
 	var event types.Event
 
 	err := r.db.WithContext(ctx).
@@ -58,7 +89,7 @@ func (r *EventPostgresRepository) AllByNameAndSource(ctx context.Context, name *
 	return events, nil
 }
 
-func (r *EventPostgresRepository) Delete(ctx context.Context, id *types.EventId) error {
+func (r *EventPostgresRepository) Delete(ctx context.Context, id *types.SharedId) error {
 	result := r.db.WithContext(ctx).
 		Where("id = ?", id.Value()).
 		Delete(&types.Event{})
@@ -71,4 +102,11 @@ func (r *EventPostgresRepository) Delete(ctx context.Context, id *types.EventId)
 	}
 
 	return nil
+}
+
+func (r *EventPostgresRepository) CreateSubscription(ctx context.Context, sub *types.Subscription) error {
+	return r.db.WithContext(ctx).
+		Table("subscriptions").
+		Clauses(clause.OnConflict{DoNothing: true}).
+		Create(sub).Error
 }

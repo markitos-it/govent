@@ -530,6 +530,118 @@ func (x *AllEventsByNameAndSourceResponse) GetEvents() []*Event {
 	return nil
 }
 
+type CreateSubscriptionRequest struct {
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	SubscriberName string                 `protobuf:"bytes,1,opt,name=subscriber_name,json=subscriberName,proto3" json:"subscriber_name,omitempty"`
+	EventName      string                 `protobuf:"bytes,2,opt,name=event_name,json=eventName,proto3" json:"event_name,omitempty"`
+	Source         string                 `protobuf:"bytes,3,opt,name=source,proto3" json:"source,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *CreateSubscriptionRequest) Reset() {
+	*x = CreateSubscriptionRequest{}
+	mi := &file_govent_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateSubscriptionRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateSubscriptionRequest) ProtoMessage() {}
+
+func (x *CreateSubscriptionRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_govent_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateSubscriptionRequest.ProtoReflect.Descriptor instead.
+func (*CreateSubscriptionRequest) Descriptor() ([]byte, []int) {
+	return file_govent_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *CreateSubscriptionRequest) GetSubscriberName() string {
+	if x != nil {
+		return x.SubscriberName
+	}
+	return ""
+}
+
+func (x *CreateSubscriptionRequest) GetEventName() string {
+	if x != nil {
+		return x.EventName
+	}
+	return ""
+}
+
+func (x *CreateSubscriptionRequest) GetSource() string {
+	if x != nil {
+		return x.Source
+	}
+	return ""
+}
+
+type CreateSubscriptionResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateSubscriptionResponse) Reset() {
+	*x = CreateSubscriptionResponse{}
+	mi := &file_govent_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateSubscriptionResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateSubscriptionResponse) ProtoMessage() {}
+
+func (x *CreateSubscriptionResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_govent_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateSubscriptionResponse.ProtoReflect.Descriptor instead.
+func (*CreateSubscriptionResponse) Descriptor() ([]byte, []int) {
+	return file_govent_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *CreateSubscriptionResponse) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
+func (x *CreateSubscriptionResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
 var File_govent_proto protoreflect.FileDescriptor
 
 const file_govent_proto_rawDesc = "" +
@@ -568,12 +680,21 @@ const file_govent_proto_rawDesc = "" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x16\n" +
 	"\x06source\x18\x02 \x01(\tR\x06source\"H\n" +
 	" AllEventsByNameAndSourceResponse\x12$\n" +
-	"\x06events\x18\x01 \x03(\v2\f.event.EventR\x06events2\xbe\x02\n" +
+	"\x06events\x18\x01 \x03(\v2\f.event.EventR\x06events\"{\n" +
+	"\x19CreateSubscriptionRequest\x12'\n" +
+	"\x0fsubscriber_name\x18\x01 \x01(\tR\x0esubscriberName\x12\x1d\n" +
+	"\n" +
+	"event_name\x18\x02 \x01(\tR\teventName\x12\x16\n" +
+	"\x06source\x18\x03 \x01(\tR\x06source\"P\n" +
+	"\x1aCreateSubscriptionResponse\x12\x18\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage2\x99\x03\n" +
 	"\fEventservice\x12D\n" +
 	"\vCreateEvent\x12\x19.event.CreateEventRequest\x1a\x1a.event.CreateEventResponse\x12;\n" +
 	"\bGetEvent\x12\x16.event.GetEventRequest\x1a\x17.event.GetEventResponse\x12D\n" +
 	"\vDeleteEvent\x12\x19.event.DeleteEventRequest\x1a\x1a.event.DeleteEventResponse\x12e\n" +
-	"\x12AllByNameAndSource\x12&.event.AllEventsByNameAndSourceRequest\x1a'.event.AllEventsByNameAndSourceResponseB!Z\x1fmarkitos-it-svc-event-grpc/gapib\x06proto3"
+	"\x12AllByNameAndSource\x12&.event.AllEventsByNameAndSourceRequest\x1a'.event.AllEventsByNameAndSourceResponse\x12Y\n" +
+	"\x12CreateSubscription\x12 .event.CreateSubscriptionRequest\x1a!.event.CreateSubscriptionResponseB!Z\x1fmarkitos-it-svc-event-grpc/gapib\x06proto3"
 
 var (
 	file_govent_proto_rawDescOnce sync.Once
@@ -587,7 +708,7 @@ func file_govent_proto_rawDescGZIP() []byte {
 	return file_govent_proto_rawDescData
 }
 
-var file_govent_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
+var file_govent_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
 var file_govent_proto_goTypes = []any{
 	(*Event)(nil),                            // 0: event.Event
 	(*CreateEventRequest)(nil),               // 1: event.CreateEventRequest
@@ -598,25 +719,29 @@ var file_govent_proto_goTypes = []any{
 	(*DeleteEventResponse)(nil),              // 6: event.DeleteEventResponse
 	(*AllEventsByNameAndSourceRequest)(nil),  // 7: event.AllEventsByNameAndSourceRequest
 	(*AllEventsByNameAndSourceResponse)(nil), // 8: event.AllEventsByNameAndSourceResponse
-	(*timestamppb.Timestamp)(nil),            // 9: google.protobuf.Timestamp
+	(*CreateSubscriptionRequest)(nil),        // 9: event.CreateSubscriptionRequest
+	(*CreateSubscriptionResponse)(nil),       // 10: event.CreateSubscriptionResponse
+	(*timestamppb.Timestamp)(nil),            // 11: google.protobuf.Timestamp
 }
 var file_govent_proto_depIdxs = []int32{
-	9, // 0: event.Event.created_at:type_name -> google.protobuf.Timestamp
-	9, // 1: event.Event.updated_at:type_name -> google.protobuf.Timestamp
-	0, // 2: event.AllEventsByNameAndSourceResponse.events:type_name -> event.Event
-	1, // 3: event.Eventservice.CreateEvent:input_type -> event.CreateEventRequest
-	3, // 4: event.Eventservice.GetEvent:input_type -> event.GetEventRequest
-	5, // 5: event.Eventservice.DeleteEvent:input_type -> event.DeleteEventRequest
-	7, // 6: event.Eventservice.AllByNameAndSource:input_type -> event.AllEventsByNameAndSourceRequest
-	2, // 7: event.Eventservice.CreateEvent:output_type -> event.CreateEventResponse
-	4, // 8: event.Eventservice.GetEvent:output_type -> event.GetEventResponse
-	6, // 9: event.Eventservice.DeleteEvent:output_type -> event.DeleteEventResponse
-	8, // 10: event.Eventservice.AllByNameAndSource:output_type -> event.AllEventsByNameAndSourceResponse
-	7, // [7:11] is the sub-list for method output_type
-	3, // [3:7] is the sub-list for method input_type
-	3, // [3:3] is the sub-list for extension type_name
-	3, // [3:3] is the sub-list for extension extendee
-	0, // [0:3] is the sub-list for field type_name
+	11, // 0: event.Event.created_at:type_name -> google.protobuf.Timestamp
+	11, // 1: event.Event.updated_at:type_name -> google.protobuf.Timestamp
+	0,  // 2: event.AllEventsByNameAndSourceResponse.events:type_name -> event.Event
+	1,  // 3: event.Eventservice.CreateEvent:input_type -> event.CreateEventRequest
+	3,  // 4: event.Eventservice.GetEvent:input_type -> event.GetEventRequest
+	5,  // 5: event.Eventservice.DeleteEvent:input_type -> event.DeleteEventRequest
+	7,  // 6: event.Eventservice.AllByNameAndSource:input_type -> event.AllEventsByNameAndSourceRequest
+	9,  // 7: event.Eventservice.CreateSubscription:input_type -> event.CreateSubscriptionRequest
+	2,  // 8: event.Eventservice.CreateEvent:output_type -> event.CreateEventResponse
+	4,  // 9: event.Eventservice.GetEvent:output_type -> event.GetEventResponse
+	6,  // 10: event.Eventservice.DeleteEvent:output_type -> event.DeleteEventResponse
+	8,  // 11: event.Eventservice.AllByNameAndSource:output_type -> event.AllEventsByNameAndSourceResponse
+	10, // 12: event.Eventservice.CreateSubscription:output_type -> event.CreateSubscriptionResponse
+	8,  // [8:13] is the sub-list for method output_type
+	3,  // [3:8] is the sub-list for method input_type
+	3,  // [3:3] is the sub-list for extension type_name
+	3,  // [3:3] is the sub-list for extension extendee
+	0,  // [0:3] is the sub-list for field type_name
 }
 
 func init() { file_govent_proto_init() }
@@ -630,7 +755,7 @@ func file_govent_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_govent_proto_rawDesc), len(file_govent_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   9,
+			NumMessages:   11,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

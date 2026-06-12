@@ -23,6 +23,7 @@ const (
 	Eventservice_GetEvent_FullMethodName           = "/event.Eventservice/GetEvent"
 	Eventservice_DeleteEvent_FullMethodName        = "/event.Eventservice/DeleteEvent"
 	Eventservice_AllByNameAndSource_FullMethodName = "/event.Eventservice/AllByNameAndSource"
+	Eventservice_CreateSubscription_FullMethodName = "/event.Eventservice/CreateSubscription"
 )
 
 // EventserviceClient is the client API for Eventservice service.
@@ -33,6 +34,7 @@ type EventserviceClient interface {
 	GetEvent(ctx context.Context, in *GetEventRequest, opts ...grpc.CallOption) (*GetEventResponse, error)
 	DeleteEvent(ctx context.Context, in *DeleteEventRequest, opts ...grpc.CallOption) (*DeleteEventResponse, error)
 	AllByNameAndSource(ctx context.Context, in *AllEventsByNameAndSourceRequest, opts ...grpc.CallOption) (*AllEventsByNameAndSourceResponse, error)
+	CreateSubscription(ctx context.Context, in *CreateSubscriptionRequest, opts ...grpc.CallOption) (*CreateSubscriptionResponse, error)
 }
 
 type eventserviceClient struct {
@@ -83,6 +85,16 @@ func (c *eventserviceClient) AllByNameAndSource(ctx context.Context, in *AllEven
 	return out, nil
 }
 
+func (c *eventserviceClient) CreateSubscription(ctx context.Context, in *CreateSubscriptionRequest, opts ...grpc.CallOption) (*CreateSubscriptionResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateSubscriptionResponse)
+	err := c.cc.Invoke(ctx, Eventservice_CreateSubscription_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // EventserviceServer is the server API for Eventservice service.
 // All implementations must embed UnimplementedEventserviceServer
 // for forward compatibility.
@@ -91,6 +103,7 @@ type EventserviceServer interface {
 	GetEvent(context.Context, *GetEventRequest) (*GetEventResponse, error)
 	DeleteEvent(context.Context, *DeleteEventRequest) (*DeleteEventResponse, error)
 	AllByNameAndSource(context.Context, *AllEventsByNameAndSourceRequest) (*AllEventsByNameAndSourceResponse, error)
+	CreateSubscription(context.Context, *CreateSubscriptionRequest) (*CreateSubscriptionResponse, error)
 	mustEmbedUnimplementedEventserviceServer()
 }
 
@@ -112,6 +125,9 @@ func (UnimplementedEventserviceServer) DeleteEvent(context.Context, *DeleteEvent
 }
 func (UnimplementedEventserviceServer) AllByNameAndSource(context.Context, *AllEventsByNameAndSourceRequest) (*AllEventsByNameAndSourceResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method AllByNameAndSource not implemented")
+}
+func (UnimplementedEventserviceServer) CreateSubscription(context.Context, *CreateSubscriptionRequest) (*CreateSubscriptionResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method CreateSubscription not implemented")
 }
 func (UnimplementedEventserviceServer) mustEmbedUnimplementedEventserviceServer() {}
 func (UnimplementedEventserviceServer) testEmbeddedByValue()                      {}
@@ -206,6 +222,24 @@ func _Eventservice_AllByNameAndSource_Handler(srv interface{}, ctx context.Conte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Eventservice_CreateSubscription_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateSubscriptionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(EventserviceServer).CreateSubscription(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Eventservice_CreateSubscription_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(EventserviceServer).CreateSubscription(ctx, req.(*CreateSubscriptionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Eventservice_ServiceDesc is the grpc.ServiceDesc for Eventservice service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -228,6 +262,10 @@ var Eventservice_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "AllByNameAndSource",
 			Handler:    _Eventservice_AllByNameAndSource_Handler,
+		},
+		{
+			MethodName: "CreateSubscription",
+			Handler:    _Eventservice_CreateSubscription_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -10,18 +10,20 @@ import (
 )
 
 type MockSpyEventRepository struct {
-	LastCreatedEventName   *string
-	LastDeleteEventId      *string
-	LastOneEventId         *string
-	LastAllByNameAndSource []types.Event
+	LastCreatedEventName         *string
+	LastDeleteEventId            *string
+	LastOneEventId               *string
+	LastAllByNameAndSource       []types.Event
+	LastCreatedSubscriptionEvent *string
 }
 
 func NewMockSpyEventRepository() *MockSpyEventRepository {
 	return &MockSpyEventRepository{
-		LastCreatedEventName:   nil,
-		LastDeleteEventId:      nil,
-		LastOneEventId:         nil,
-		LastAllByNameAndSource: nil,
+		LastCreatedEventName:         nil,
+		LastDeleteEventId:            nil,
+		LastOneEventId:               nil,
+		LastAllByNameAndSource:       nil,
+		LastCreatedSubscriptionEvent: nil,
 	}
 }
 
@@ -39,7 +41,20 @@ func (m *MockSpyEventRepository) CreateHaveBeenCalledWith(eventName *string) boo
 	return result
 }
 
-func (m *MockSpyEventRepository) Delete(ctx context.Context, id *types.EventId) error {
+func (m *MockSpyEventRepository) CreateSubscription(ctx context.Context, sub *types.Subscription) error {
+	m.LastCreatedSubscriptionEvent = &sub.EventName
+	return nil
+}
+
+func (m *MockSpyEventRepository) CreateSubscriptionHaveBeenCalledWith(eventName *string) bool {
+	var result = m.LastCreatedSubscriptionEvent != nil && *m.LastCreatedSubscriptionEvent == *eventName
+
+	m.LastCreatedSubscriptionEvent = nil
+
+	return result
+}
+
+func (m *MockSpyEventRepository) Delete(ctx context.Context, id *types.SharedId) error {
 	value := id.Value()
 	m.LastDeleteEventId = &value
 
@@ -54,7 +69,7 @@ func (m *MockSpyEventRepository) DeleteHaveBeenCalledWith(eventId *string) bool 
 	return result
 }
 
-func (m *MockSpyEventRepository) One(ctx context.Context, id *types.EventId) (*types.Event, error) {
+func (m *MockSpyEventRepository) One(ctx context.Context, id *types.SharedId) (*types.Event, error) {
 	value := id.Value()
 	m.LastOneEventId = &value
 

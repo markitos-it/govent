@@ -15,8 +15,7 @@ type Event struct {
 }
 
 func NewEvent(id, name, source, payload string) (*Event, error) {
-	secureId, err := NewEventId(id)
-
+	secureId, err := NewSharedId(id)
 	if err != nil {
 		log.Printf("❌ DEBUG ERROR (NewEventId): %v\n", err)
 		return nil, err
@@ -60,4 +59,8 @@ func (e *Event) GetSource() *EventSource {
 	result, _ := NewEventSource(e.Source)
 
 	return result
+}
+
+func (Event) TableName() string {
+	return "events"
 }

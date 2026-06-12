@@ -103,7 +103,7 @@ func loadDatabase(logger types.Logger) {
 		logger.Fatal("['.']:> error unable to connect to database:" + err.Error())
 	}
 
-	err = db.AutoMigrate(&types.Event{})
+	err = db.AutoMigrate(&types.Event{}, &types.QueueMessage{}, &types.Subscription{})
 	if err != nil {
 		logger.Fatal("['.']:> error unable to migrate database:" + err.Error())
 	}

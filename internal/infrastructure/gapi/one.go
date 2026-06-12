@@ -11,7 +11,7 @@ import (
 )
 
 func (s *Server) GetEvent(ctx context.Context, in *GetEventRequest) (*GetEventResponse, error) {
-	if _, err := types.NewEventId(in.Id); err != nil {
+	if _, err := types.NewSharedId(in.Id); err != nil {
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 	request := services.EventOneRequest{Id: in.Id}

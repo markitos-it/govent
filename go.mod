@@ -3,6 +3,7 @@ module govent
 go 1.26.4
 
 require (
+	github.com/google/uuid v1.6.0
 	github.com/grpc-ecosystem/go-grpc-middleware/v2 v2.3.3
 	github.com/lmittmann/tint v1.1.3
 	github.com/spf13/viper v1.21.0

@@ -36,7 +36,7 @@ func TestEventDelete(t *testing.T) {
 
 	repository := database.NewEventPostgresRepository(testdb.GetDB())
 
-	id, _ := types.NewEventId(event.Id)
+	id, _ := types.NewSharedId(event.Id)
 	err := repository.Delete(context.TODO(), id)
 	require.NoError(t, err)
 }
@@ -46,7 +46,7 @@ func TestEventOne(t *testing.T) {
 	_ = testdb.GetRepository().Create(context.TODO(), event)
 
 	repository := database.NewEventPostgresRepository(testdb.GetDB())
-	id, _ := types.NewEventId(event.Id)
+	id, _ := types.NewSharedId(event.Id)
 
 	result, err := repository.One(context.TODO(), id)
 	require.NoError(t, err)

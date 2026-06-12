@@ -21,7 +21,7 @@ func NewEventDeleteService(repository types.EventRepository) EventDeleteService 
 }
 
 func (s EventDeleteService) Do(ctx context.Context, request EventDeleteRequest) error {
-	securedId, err := types.NewEventId(request.Id)
+	securedId, err := types.NewSharedId(request.Id)
 	if err != nil {
 		return err
 	}
