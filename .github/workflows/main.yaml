@@ -23,10 +23,17 @@ jobs:
           go-version: '1.26.4'
           cache: true # Activa la caché de dependencias para acelerar las ejecuciones
 
-      # 3. Lanzar tus tests unitarios / de integración
+      # 3. Levantar y preparar la Base de Datos Postgres
+      - name: Start Postgres Database
+        run: make db-start
+
+      - name: Create Database and Schema
+        run: make db-create
+
+      # 4. Lanzar tus tests unitarios / de integración (ya con la BD lista)
       - name: Run Unit Tests
         run: make test
 
-      # 4. Lanzar tus tests de seguridad (SAST, dependencias, etc.)
+      # 5. Lanzar tus tests de seguridad (SAST, dependencias, etc.)
       - name: Run Application Security Tests
         run: make appsec-test
