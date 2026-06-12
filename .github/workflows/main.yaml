@@ -12,36 +12,39 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Clonar el repositorio en el runner de GitHub
+      # 1. Clonar el repositorio
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 2. Configurar el entorno de Go con la versión exacta
+      # 2. Configurar el entorno de Go
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
           go-version: '1.26.4'
-          cache: true # Acelera las ejecuciones guardando las librerías
+          cache: true
 
       # 3. Levantar el contenedor de Postgres
       - name: Start Postgres Database
         run: make db-start
 
-      # 4. Esperar a que Postgres esté listo para recibir conexiones internamente
-      - name: Wait for Postgres to be ready
+      # 4. Esperar utilizando el Healthcheck nativo de tu docker-compose
+      - name: Wait for Postgres to be healthy
         run: |
-          echo "⏳ Esperando a que Postgres inicialice..."
-          until docker exec govent-postgres pg_isready -U govent; do
+          echo "⏳ Esperando a que el contenedor reporte estado HEALTHY..."
+          until [ "$(docker inspect --format='{{json .State.Health.Status}}' govent-postgres)" == "\"healthy\"" ]; do
             sleep 1
           done
-          echo "✅ ¡Postgres está listo!"
+          echo "✅ ¡Postgres está 100% operativo!"
 
-      # 5. Crear la Base de Datos ejecutando el script DENTRO del contenedor (Opción A)
+      # 5. Crear la Base de Datos desde el host forzando la conexión por Red (TCP)
       - name: Create Database and Schema
-        run: |
-          docker exec -i govent-postgres bash < bin/database/create.sh
+        env:
+          PGHOST: 127.0.0.1
+          PGUSER: admin
+          PGPASSWORD: admin
+        run: make db-create
 
-      # 6. Lanzar tus tests unitarios y de integración
+      # 6. Lanzar tests unitarios y de integración
       - name: Run Unit Tests
         run: make test
 
