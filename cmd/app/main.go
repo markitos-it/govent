@@ -153,15 +153,15 @@ func startServers(logger types.Logger) {
 // #[.'.]:> This function starts and manages the gRPC server lifecycle
 // #[.'.]:> STEP 1: Create a network listener
 // #[.'.]:> This listener will listen for TCP requests at the configured address and port
-// #[.'.]:> STEP 2: Create a new gRPC server instance with a generic unary interceptor
-// #[.'.]:> This object is the heart of the server and will handle all requests
-// #[.'.]:> STEP 3: Create the implementation of our service
+// #[.'.]:> STEP 2: Build a generic unary interceptor to audit payloads (input/output) and execution times
+// #[.'.]:> STEP 3: Create a new gRPC server instance injecting the interceptor
+// #[.'.]:> STEP 4: Create the implementation of our service
 // #[.'.]:> This part contains the actual business logic
-// #[.'.]:> STEP 4: Register our service with the gRPC server
+// #[.'.]:> STEP 5: Register our service with the gRPC server
 // #[.'.]:> Connects our implementations with the gRPC system
-// #[.'.]:> STEP 5: Enable reflection to facilitate testing
+// #[.'.]:> STEP 6: Enable reflection to facilitate testing
 // #[.'.]:> Reflection allows tools like grpcurl to discover our services
-// #[.'.]:> STEP 6: Set up controlled (graceful) shutdown
+// #[.'.]:> STEP 7: Set up controlled (graceful) shutdown
 // #[.'.]:> This goroutine runs in the background and waits for the shutdown signal
 // #[.'.]:> Blocks until the context is canceled (shutdown signal)
 // #[.'.]:> Logs a message indicating the server is shutting down
@@ -169,8 +169,8 @@ func startServers(logger types.Logger) {
 // #[.'.]:> - Stops accepting new connections
 // #[.'.]:> - Waits for ongoing calls to finish
 // #[.'.]:> - Closes all connections cleanly
-// #[.'.]:> STEP 7: Log that the server is running
-// #[.'.]:> STEP 8: Start the server (this method blocks until an error occurs)
+// #[.'.]:> STEP 8: Log that the server is running
+// #[.'.]:> STEP 9: Start the server (this method blocks until an error occurs)
 // #[.'.]:> The server now actively listens for incoming requests
 func runGRPCServer(ctx context.Context, logger types.Logger) error {
 	listener, err := net.Listen("tcp", config.GRPCServerAddress)
