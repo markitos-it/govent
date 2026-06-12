@@ -13,15 +13,13 @@ import (
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/logging"
 )
 
-var groupJSONSLoggerPrefix = ""
-
 type PrettyJSONHandler struct {
 	slog.Handler
 }
 
 func (h *PrettyJSONHandler) Handle(ctx context.Context, r slog.Record) error {
 
-	if !h.Handler.Enabled(ctx, r.Level) {
+	if !h.Enabled(ctx, r.Level) {
 		return nil
 	}
 
@@ -73,12 +71,10 @@ func InterceptorLogger(l *slog.Logger) logging.Logger {
 
 func (s *JSONSLogger) OpenGroup(name string) {
 	s.logger.Info("start of group", "group_name", name)
-	groupJSONSLoggerPrefix = name + " > "
 }
 
 func (s *JSONSLogger) CloseGroup(name string) {
 	s.logger.Info("end of group", "group_name", name)
-	groupJSONSLoggerPrefix = ""
 }
 
 func (s *JSONSLogger) Info(message string) {

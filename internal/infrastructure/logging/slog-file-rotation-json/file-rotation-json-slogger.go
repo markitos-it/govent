@@ -19,7 +19,7 @@ type FileRotationJSONSLogger struct {
 
 func NewFileRotationJSONSLogger() types.Logger {
 	logDir := "logs"
-	_ = os.MkdirAll(logDir, 0755)
+	_ = os.MkdirAll(logDir, 0750)
 
 	fileRotator := &lumberjack.Logger{
 		Filename:   filepath.Join(logDir, "production.log"),

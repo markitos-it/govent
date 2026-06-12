@@ -3,11 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"govent/internal/domain/types"
-	"govent/internal/infrastructure/configuration"
-	"govent/internal/infrastructure/database"
-	"govent/internal/infrastructure/gapi"
-	slogcolored "govent/internal/infrastructure/logging/slog-colored"
 	"log"
 	"net"
 	"os"
@@ -15,6 +10,12 @@ import (
 	"sync"
 	"syscall"
 	"time"
+
+	"govent/internal/domain/types"
+	"govent/internal/infrastructure/configuration"
+	"govent/internal/infrastructure/database"
+	"govent/internal/infrastructure/gapi"
+	slogcolored "govent/internal/infrastructure/logging/slog-colored"
 
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"

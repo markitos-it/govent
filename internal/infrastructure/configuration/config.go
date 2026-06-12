@@ -1,8 +1,9 @@
 package configuration
 
 import (
-	"govent/internal/domain/types"
 	"os"
+
+	"govent/internal/domain/types"
 
 	"github.com/spf13/viper"
 )
