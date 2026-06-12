@@ -69,24 +69,26 @@ jobs:
       - name: Run Unit Tests
         run: make test
 
-# 8. PASO ULTRA-ROBUSTO: Descarga directa de binarios oficiales
+      # 8. PASO DEFINITIVO: Instalación dinámica de herramientas de última generación
       - name: Install Security & Linting Tools (Snyk, Gitleaks, GolangCI-Lint)
         run: |
           echo "📦 Instalando Snyk a través de NPM..."
           npm install -g snyk
           
-          echo "📦 Instalando Gitleaks..."
+          echo "📦 Instalando Gitleaks (Última versión)..."
           GITLEAKS_VERSION=$(curl -s https://api.github.com/repos/gitleaks/gitleaks/releases/latest | grep tag_name | cut -d '"' -f 4 | sed 's/v//')
           curl -sSfL "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" | tar -xz
-          sudo mv gitleaks /usr/local/bin/
+          sudo cp gitleaks /usr/local/bin/
+          cp gitleaks ./ # Lo dejamos también en la raíz por si el script lo busca localmente
 
-          echo "📦 Instalando GolangCI-Lint (Descarga directa sin intermediarios)..."
-          # Descargamos directamente el binario empaquetado de una versión estable (v1.64.5)
-          curl -sSfL https://github.com/golangci/golangci-lint/releases/download/v1.64.5/golangci-lint-1.64.5-linux-amd64.tar.gz -o linter.tar.gz
-          tar -xzf linter.tar.gz
-          sudo mv golangci-lint-1.64.5-linux-amd64/golangci-lint /usr/local/bin/
-          # Limpieza de archivos temporales
-          rm -rf linter.tar.gz golangci-lint-1.64.5-linux-amd64
+          echo "📦 Instalando GolangCI-Lint (Última versión compatible con Go 1.26+)..."
+          GOLANGCI_VERSION=$(curl -s https://api.github.com/repos/golangci/golangci-lint/releases/latest | grep tag_name | cut -d '"' -f 4 | sed 's/v//')
+          curl -sSfL "https://github.com/golangci/golangci-lint/releases/download/v${GOLANGCI_VERSION}/golangci-lint-${GOLANGCI_VERSION}-linux-amd64.tar.gz" | tar -xz
+          sudo cp "golangci-lint-${GOLANGCI_VERSION}-linux-amd64/golangci-lint" /usr/local/bin/
+          cp "golangci-lint-${GOLANGCI_VERSION}-linux-amd64/golangci-lint" ./ # Lo dejamos también en la raíz
+          
+          echo "🧹 Limpiando archivos temporales..."
+          rm -rf golangci-lint-${GOLANGCI_VERSION}-linux-amd64
 
       # 9. Lanzar tests de seguridad (Validando el Token de Snyk)
       - name: Run Application Security Tests
