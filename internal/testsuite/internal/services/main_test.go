@@ -5,8 +5,8 @@ import (
 	"os"
 	"testing"
 
-	"govent/internal/domain/types"
-	internal_test "govent/internal/testsuite/internal"
+	"go-vents/internal/domain/types"
+	internal_test "go-vents/internal/testsuite/internal"
 )
 
 type MockSpyEventRepository struct {

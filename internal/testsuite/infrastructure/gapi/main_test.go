@@ -7,12 +7,12 @@ import (
 	"os"
 	"testing"
 
-	"govent/internal/domain/types"
-	"govent/internal/infrastructure/configuration"
-	"govent/internal/infrastructure/gapi"
-	slogcolored "govent/internal/infrastructure/logging/slog-colored"
-	"govent/internal/testsuite/infrastructure/testdb"
-	internal_test "govent/internal/testsuite/internal"
+	"go-vents/internal/domain/types"
+	"go-vents/internal/infrastructure/configuration"
+	"go-vents/internal/infrastructure/gapi"
+	slogcolored "go-vents/internal/infrastructure/logging/slog-colored"
+	"go-vents/internal/testsuite/infrastructure/testdb"
+	internal_test "go-vents/internal/testsuite/internal"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"

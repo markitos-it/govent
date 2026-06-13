@@ -3,7 +3,7 @@ package types
 import (
 	"encoding/json"
 
-	"govent/internal/domain/shared"
+	"go-vents/internal/domain/shared"
 )
 
 type EventPayload struct {

@@ -1,7 +1,7 @@
 package gapi
 
 import (
-	"govent/internal/domain/types"
+	"go-vents/internal/domain/types"
 
 	"google.golang.org/protobuf/types/known/timestamppb"
 )

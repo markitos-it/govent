@@ -3,7 +3,7 @@ package configuration
 import (
 	"os"
 
-	"govent/internal/domain/types"
+	"go-vents/internal/domain/types"
 
 	"github.com/spf13/viper"
 )

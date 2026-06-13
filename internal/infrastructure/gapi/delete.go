@@ -3,8 +3,8 @@ package gapi
 import (
 	context "context"
 
-	"govent/internal/domain/services"
-	"govent/internal/domain/types"
+	"go-vents/internal/domain/services"
+	"go-vents/internal/domain/types"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"

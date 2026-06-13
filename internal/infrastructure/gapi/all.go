@@ -3,7 +3,7 @@ package gapi
 import (
 	context "context"
 
-	"govent/internal/domain/services"
+	"go-vents/internal/domain/services"
 
 	status "google.golang.org/grpc/status"
 )

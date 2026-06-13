@@ -11,11 +11,11 @@ import (
 	"syscall"
 	"time"
 
-	"govent/internal/domain/types"
-	"govent/internal/infrastructure/configuration"
-	"govent/internal/infrastructure/database"
-	"govent/internal/infrastructure/gapi"
-	slogcolored "govent/internal/infrastructure/logging/slog-colored"
+	"go-vents/internal/domain/types"
+	"go-vents/internal/infrastructure/configuration"
+	"go-vents/internal/infrastructure/database"
+	"go-vents/internal/infrastructure/gapi"
+	slogcolored "go-vents/internal/infrastructure/logging/slog-colored"
 
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"

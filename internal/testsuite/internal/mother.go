@@ -1,8 +1,8 @@
 package internal_test
 
 import (
-	"govent/internal/domain/shared"
-	"govent/internal/domain/types"
+	"go-vents/internal/domain/shared"
+	"go-vents/internal/domain/types"
 )
 
 func NewRandomEvent() *types.Event {

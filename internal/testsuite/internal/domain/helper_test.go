@@ -4,7 +4,7 @@ import (
 	"regexp"
 	"testing"
 
-	"govent/internal/domain/shared"
+	"go-vents/internal/domain/shared"
 
 	"github.com/stretchr/testify/require"
 )

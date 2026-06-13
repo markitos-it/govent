@@ -3,7 +3,7 @@ package types
 import (
 	"regexp"
 
-	"govent/internal/domain/shared"
+	"go-vents/internal/domain/shared"
 )
 
 type EventName struct {

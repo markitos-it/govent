@@ -4,9 +4,9 @@ import (
 	"errors"
 	"strings"
 
-	sharedDomain "govent/internal/domain/shared"
-	"govent/internal/domain/types"
-	"govent/internal/infrastructure/configuration"
+	sharedDomain "go-vents/internal/domain/shared"
+	"go-vents/internal/domain/types"
+	"go-vents/internal/infrastructure/configuration"
 
 	codes "google.golang.org/grpc/codes"
 	"google.golang.org/protobuf/types/known/timestamppb"

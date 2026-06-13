@@ -3,7 +3,7 @@ package services
 import (
 	"context"
 
-	"govent/internal/domain/types"
+	"go-vents/internal/domain/types"
 )
 
 type EventDeleteRequest struct {

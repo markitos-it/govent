@@ -3,7 +3,7 @@ package gapi_test
 import (
 	"testing"
 
-	"govent/internal/infrastructure/gapi"
+	"go-vents/internal/infrastructure/gapi"
 
 	"github.com/stretchr/testify/require"
 )

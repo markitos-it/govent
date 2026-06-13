@@ -1,7 +1,7 @@
 package types
 
 import (
-	"govent/internal/domain/shared"
+	"go-vents/internal/domain/shared"
 )
 
 type EventSource struct {

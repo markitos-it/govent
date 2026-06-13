@@ -4,8 +4,8 @@ import (
 	"strings"
 	"testing"
 
-	"govent/internal/domain/shared"
-	"govent/internal/domain/types"
+	"go-vents/internal/domain/shared"
+	"go-vents/internal/domain/types"
 
 	"github.com/stretchr/testify/assert"
 )

@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"time"
 
-	"govent/internal/domain/shared"
-	"govent/internal/domain/types"
+	"go-vents/internal/domain/shared"
+	"go-vents/internal/domain/types"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"

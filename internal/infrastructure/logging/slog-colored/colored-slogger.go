@@ -4,7 +4,7 @@ import (
 	"log/slog"
 	"os"
 
-	"govent/internal/domain/types"
+	"go-vents/internal/domain/types"
 
 	"github.com/lmittmann/tint"
 )

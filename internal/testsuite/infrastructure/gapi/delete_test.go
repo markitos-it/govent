@@ -4,8 +4,8 @@ import (
 	"log"
 	"testing"
 
-	"govent/internal/domain/shared"
-	"govent/internal/infrastructure/gapi"
+	"go-vents/internal/domain/shared"
+	"go-vents/internal/infrastructure/gapi"
 
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc/codes"

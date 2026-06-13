@@ -4,9 +4,9 @@ import (
 	"context"
 	"testing"
 
-	"govent/internal/domain/services"
-	"govent/internal/domain/shared"
-	"govent/internal/domain/types"
+	"go-vents/internal/domain/services"
+	"go-vents/internal/domain/shared"
+	"go-vents/internal/domain/types"
 
 	"github.com/stretchr/testify/assert"
 )

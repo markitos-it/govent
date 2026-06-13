@@ -3,8 +3,8 @@ package gapi_test
 import (
 	"testing"
 
-	"govent/internal/infrastructure/gapi"
-	internal_test "govent/internal/testsuite/internal"
+	"go-vents/internal/infrastructure/gapi"
+	internal_test "go-vents/internal/testsuite/internal"
 
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc/codes"

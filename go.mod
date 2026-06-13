@@ -1,4 +1,4 @@
-module govent
+module go-vents
 
 go 1.26.4
 

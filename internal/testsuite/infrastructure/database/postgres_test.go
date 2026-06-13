@@ -5,11 +5,11 @@ import (
 	"testing"
 	"time"
 
-	"govent/internal/domain/types"
-	"govent/internal/infrastructure/database"
+	"go-vents/internal/domain/types"
+	"go-vents/internal/infrastructure/database"
 
-	"govent/internal/testsuite/infrastructure/testdb"
-	internal_test "govent/internal/testsuite/internal"
+	"go-vents/internal/testsuite/infrastructure/testdb"
+	internal_test "go-vents/internal/testsuite/internal"
 
 	"github.com/stretchr/testify/require"
 )

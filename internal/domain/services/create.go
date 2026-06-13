@@ -3,8 +3,8 @@ package services
 import (
 	"context"
 
-	"govent/internal/domain/shared"
-	"govent/internal/domain/types"
+	"go-vents/internal/domain/shared"
+	"go-vents/internal/domain/types"
 )
 
 type EventCreateRequest struct {

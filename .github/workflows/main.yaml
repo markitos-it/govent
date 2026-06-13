@@ -35,6 +35,7 @@ jobs:
           echo "✅ ¡Postgres está 100% operativo!"
 
       - name: Create Database
+        id: db-create
         env:
           PGHOST: 127.0.0.1
           PGUSER: admin
@@ -44,6 +45,7 @@ jobs:
           make db-create
 
       - name: Start API Server & Wait for Port 30000
+        id: api-start
         run: |
           make start &
           echo "⏳ Esperando de forma dinámica a que el API responda en el puerto 30000..."
@@ -60,9 +62,11 @@ jobs:
           fi
 
       - name: Run Unit Tests
+        id: unit-tests
         run: make test
 
       - name: Install Security & Linting Tools (Snyk, Gitleaks, GolangCI-Lint)
+        id: tools-install
         run: |
           echo "📦 Instalando Snyk a través de NPM..."
           npm install -g snyk
@@ -83,6 +87,7 @@ jobs:
 
       # 9. Lanzar suite de seguridad nativa
       - name: Run Application Security Tests
+        id: appsec
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         run: make appsec-test
@@ -91,12 +96,27 @@ jobs:
       - name: Generate Beautiful Job Summary
         if: always()
         run: |
+          status_to_emoji() {
+            if [ "$1" == "success" ]; then
+              echo "✅"
+            elif [ "$1" == "failure" ]; then
+              echo "❌"
+            elif [ "$1" == "cancelled" ]; then
+              echo "🛑"
+            else
+              echo "⏭️"
+            fi
+          }
+          
           echo "## 🚀 GoVent DevSecOps - Reporte de Ejecución" >> $GITHUB_STEP_SUMMARY
           echo "---" >> $GITHUB_STEP_SUMMARY
           echo "### 📊 Resumen de la Infraestructura de CI" >> $GITHUB_STEP_SUMMARY
-          echo "| Componente | Configuración / Estado |" >> $GITHUB_STEP_SUMMARY
-          echo "| :--- | :--- |" >> $GITHUB_STEP_SUMMARY
-          echo "| 🦫 **Entorno Core** | Go v1.26.4 (Caché Activa) |" >> $GITHUB_STEP_SUMMARY
-          echo "| 🐘 **Base de Datos** | Postgres 17 (Docker Alpine) |" >> $GITHUB_STEP_SUMMARY
-          echo "| ⚡ **ORM Migrations** | Puerto :30000 validado dinámicamente |" >> $GITHUB_STEP_SUMMARY
-          echo "| 🛡️ **AppSec Suite** | Snyk, Gitleaks y Linter ejecutados |" >> $GITHUB_STEP_SUMMARY
+          echo "| Componente | Configuración / Tarea | Resultado |" >> $GITHUB_STEP_SUMMARY
+          echo "| :--- | :--- | :---: |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🦫 **Entorno Core** | Go v1.26.4 (Caché Activa) | $(status_to_emoji '${{ steps.setup-go.outcome }}') |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🐘 **Base de Datos** | Postgres 17 (Docker Alpine) | $(status_to_emoji '${{ steps.db-healthy.outcome }}') |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🗄️ **Base de Datos** | Creación DB govent | $(status_to_emoji '${{ steps.db-create.outcome }}') |" >> $GITHUB_STEP_SUMMARY
+          echo "| ⚡ **ORM Migrations** | Puerto :30000 validado dinámicamente | $(status_to_emoji '${{ steps.api-start.outcome }}') |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🧪 **Tests Unitarios** | Cobertura y test suite | $(status_to_emoji '${{ steps.unit-tests.outcome }}') |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🛠️ **Herramientas CI** | Setup de Snyk, Gitleaks, y GolangCI | $(status_to_emoji '${{ steps.tools-install.outcome }}') |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🛡️ **AppSec Suite** | Análisis de vulnerabilidades superado | $(status_to_emoji '${{ steps.appsec.outcome }}') |" >> $GITHUB_STEP_SUMMARY

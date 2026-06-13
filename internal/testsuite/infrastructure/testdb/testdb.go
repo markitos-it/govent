@@ -7,10 +7,10 @@ import (
 	"strings"
 	"sync"
 
-	"govent/internal/domain/types"
-	"govent/internal/infrastructure/configuration"
-	"govent/internal/infrastructure/database"
-	slogcolored "govent/internal/infrastructure/logging/slog-colored"
+	"go-vents/internal/domain/types"
+	"go-vents/internal/infrastructure/configuration"
+	"go-vents/internal/infrastructure/database"
+	slogcolored "go-vents/internal/infrastructure/logging/slog-colored"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"

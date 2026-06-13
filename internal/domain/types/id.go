@@ -1,6 +1,6 @@
 package types
 
-import "govent/internal/domain/shared"
+import "go-vents/internal/domain/shared"
 
 type SharedId struct {
 	value string
