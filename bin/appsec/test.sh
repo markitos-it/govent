@@ -5,21 +5,21 @@ IFS=$'\n\t'
 ENVIRONMENT_FILE="bin/shared/environment.sh"
 source "$ENVIRONMENT_FILE"
 
-# Colores para la consola
+# Console Colors
 GREEN='\033[0;32m'
 RED='\033[0;31m'
-NC='\033[0;3m' # No Color
 RESET='\033[0;0m'
 
 log_info() { echo -e "[INFO] $*"; }
 log_error() { echo -e "[ERROR] $*" >&2; }
 
-# Función auxiliar para formatear el resultado
+# Helper function to print results
 print_result() {
     local name=$1
     local status=$2
     if [[ $status -eq 0 ]]; then
         echo -e "  - $name: ${GREEN}[OK]${RESET}"
+        return 0
     else
         echo -e "  - $name: ${RED}[KO]${RESET}"
         return 1
@@ -30,68 +30,78 @@ setup_environment
 show_config "full"
 
 echo "--------------------------------------------------"
-log_info "Iniciando análisis de seguridad..."
+log_info "Starting security analysis..."
 echo "--------------------------------------------------"
 
-# 1. Verificaciones rápidas de herramientas
+# Snyk Authentication
 snyk auth "$SNYK_TOKEN" > /dev/null 2>&1
 
-# Variable para rastrear si algo falla al final
+# Track global exit status
 GLOBAL_EXIT=0
 
-# 2. Ejecución de Scans (Silenciosos a menos que fallen)
+# Create a temporary directory to store logs if tools fail
+LOG_DIR=$(mktemp -d)
+trap 'rm -rf "$LOG_DIR"' EXIT
 
 # --- SNYK CODE ---
-if snyk code test --severity-threshold=medium --include-ignores > /dev/null 2>&1; then
+if snyk code test --severity-threshold=medium --include-ignores > "$LOG_DIR/snyk_code.log" 2>&1; then
     print_result "Snyk Code (SAST)" 0
 else
-    print_result "Snyk Code (SAST)" 1 && GLOBAL_EXIT=1
-    log_error "Snyk Code encontró vulnerabilidades de severidad Media/Alta."
+    print_result "Snyk Code (SAST)" 1
+    GLOBAL_EXIT=1
+    log_error "Snyk Code found Medium/High severity vulnerabilities:"
+    cat "$LOG_DIR/snyk_code.log" >&2
 fi
 
 # --- SNYK SCA ---
-if snyk test --all-projects --severity-threshold=medium --include-ignores > /dev/null 2>&1; then
-    print_result "Snyk SCA (Dependencias)" 0
+if snyk test --all-projects --severity-threshold=medium --include-ignores > "$LOG_DIR/snyk_sca.log" 2>&1; then
+    print_result "Snyk SCA (Dependencies)" 0
 else
-    print_result "Snyk SCA (Dependencias)" 1 && GLOBAL_EXIT=1
-    log_error "Snyk SCA encontró vulnerabilidades en tus librerías."
+    print_result "Snyk SCA (Dependencies)" 1
+    GLOBAL_EXIT=1
+    log_error "Snyk SCA found vulnerabilities in your libraries:"
+    cat "$LOG_DIR/snyk_sca.log" >&2
 fi
 
 # --- SNYK IAC ---
-if IAC_OUTPUT=$(snyk iac test --severity-threshold=high 2>&1); then
+if snyk iac test --severity-threshold=high > "$LOG_DIR/snyk_iac.log" 2>&1; then
     print_result "Snyk IaC" 0
 else
-    if echo "$IAC_OUTPUT" | grep -qE "Could not find any valid IaC files|SNYK-CLI-0012|monthly limit"; then
-        echo -e "  - Snyk IaC: [OMITIDO] (No hay archivos o límite alcanzado)"
+    if grep -qE "Could not find any valid IaC files|SNYK-CLI-0012|monthly limit" "$LOG_DIR/snyk_iac.log"; then
+        echo -e "  - Snyk IaC: [SKIPPED] (No files found or limit reached)"
     else
-        print_result "Snyk IaC" 1 && GLOBAL_EXIT=1
-        echo "$IAC_OUTPUT" >&2
-        log_error "Snyk IaC encontró problemas de configuración."
+        print_result "Snyk IaC" 1
+        GLOBAL_EXIT=1
+        log_error "Snyk IaC found configuration issues:"
+        cat "$LOG_DIR/snyk_iac.log" >&2
     fi
 fi
 
 # --- GITLEAKS ---
-# Nota: Si es para pre-commit, recuerda cambiar 'detect --source .' por 'protect --staged'
-if gitleaks detect > /dev/null 2>&1; then
-    print_result "Gitleaks (Secretos)" 0
+if gitleaks detect > "$LOG_DIR/gitleaks.log" 2>&1; then
+    print_result "Gitleaks (Secrets)" 0
 else
-    print_result "Gitleaks (Secretos)" 1 && GLOBAL_EXIT=1
-    log_error "Gitleaks detectó posibles credenciales/tokens expuestos."
+    print_result "Gitleaks (Secrets)" 1
+    GLOBAL_EXIT=1
+    log_error "Gitleaks detected potential exposed credentials/tokens:"
+    cat "$LOG_DIR/gitleaks.log" >&2
 fi
 
 # --- GOLANGCI-LINT ---
-if golangci-lint run > /dev/null 2>&1; then
+if golangci-lint run > "$LOG_DIR/golangci_lint.log" 2>&1; then
     print_result "GolangCI-Lint" 0
 else
-    print_result "GolangCI-Lint" 1 && GLOBAL_EXIT=1
-    log_error "Errores de linter detectados en Go. Ejecuta 'golangci-lint run' para verlos."
+    print_result "GolangCI-Lint" 1
+    GLOBAL_EXIT=1
+    log_error "Linter errors detected in Go:"
+    cat "$LOG_DIR/golangci_lint.log" >&2
 fi
 
 echo "--------------------------------------------------"
 if [[ $GLOBAL_EXIT -eq 0 ]]; then
-    log_info "Análisis finalizado con éxito."
+    log_info "Analysis finished successfully."
     exit 0
 else
-    log_error "El análisis terminó con errores. Revisa los [KO] anteriores."
+    log_error "Security analysis failed. Please review the [KO] steps above."
     exit 1
 fi
