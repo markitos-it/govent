@@ -55,9 +55,3 @@ formatters:
 issues:
   max-issues-per-linter: 0
   max-same-issues: 0
-  exclude-rules:
-    # FILTRO DEFINITIVO: Empareja por archivo y por el contenido de la línea de código (source)
-    - path: internal/testsuite/.*
-      linters:
-        - gosec
-      source: "sanitizedDSN"

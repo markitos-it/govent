@@ -1,6 +1,6 @@
-# Govent (`markitos-it-svc-event`)
+# go-events
 
-**Govent** es un microservicio backend desarrollado en Go que implementa un sistema de gestión y enrutamiento de eventos mediante **gRPC**. Está diseñado siguiendo los principios de la **Arquitectura Limpia (Clean Architecture)** para ofrecer un núcleo de negocio altamente testable, desacoplado y escalable.
+**go-events** es un microservicio backend desarrollado en Go que implementa un sistema de gestión y enrutamiento de eventos mediante **gRPC**. Está diseñado siguiendo los principios de la **Arquitectura Limpia (Clean Architecture)** para ofrecer un núcleo de negocio altamente testable, desacoplado y escalable.
 
 El servicio expone operaciones tanto para la gestión tradicional de recursos (`Event`), como para patrones de mensajería del tipo Pub/Sub (`Subscription`, `PullMessages`, `AckMessage`).
 
