@@ -1,143 +1,176 @@
-# go-events
+<div align="center">
+  <h1>🚀 go-events</h1>
+  <p><strong>A robust, scalable event management and routing microservice built with Go and gRPC.</strong></p>
 
-**go-events** is a backend microservice developed in Go that implements an event management and routing system using **gRPC**. It is designed following **Clean Architecture** principles to provide a highly testable, decoupled, and scalable business core.
+  <p>
+    <img src="https://img.shields.io/badge/Go-1.26.4-00ADD8?style=flat-square&logo=go" alt="Go Version" />
+    <img src="https://img.shields.io/badge/gRPC-Framework-244C5A?style=flat-square&logo=grpc" alt="gRPC" />
+    <img src="https://img.shields.io/badge/PostgreSQL-Database-336791?style=flat-square&logo=postgresql" alt="PostgreSQL" />
+    <img src="https://img.shields.io/badge/Architecture-Clean-success?style=flat-square" alt="Clean Architecture" />
+  </p>
+</div>
+
+---
+
+## 📖 Overview
+
+**go-events** is a backend microservice developed in Go that implements an event management and routing system via **gRPC**. It is meticulously designed following **Clean Architecture** principles to provide a highly testable, decoupled, and scalable business core.
 
 The service exposes operations for both traditional resource management (`Event`) and Pub/Sub messaging patterns (`Subscription`, `PullMessages`, `AckMessage`).
 
 ---
 
-## 🚀 Main Technologies
+## ✨ Key Features
 
-- **Language:** Go 1.26.4
-- **Communications:** gRPC and Protocol Buffers (`protoc`)
-- **Database:** PostgreSQL
-- **ORM:** GORM
-- **Configuration:** Viper
-- **Logging:** `slog` (with structured colored formatting in main)
-- **Local Infrastructure:** Docker & Docker Compose
-- **Quality and Security:** `golangci-lint`, Snyk, Gitleaks
+- **Event Storage & Retrieval:** Store, fetch, and delete individual events, or list them by slug and source.
+- **Pub/Sub Messaging System:** Create subscriptions for specific events and pull queued messages reliably.
+- **Acknowledge Mechanism:** Safely acknowledge (`Ack`) processed messages to ensure they are handled properly by subscribers.
+- **Clean Architecture:** Strict separation of concerns (Domain, Infrastructure, Application).
+- **Rich Observability:** Implements structured and colored logging using `slog` and unary gRPC interceptors for request/response tracing.
+- **Developer Experience:** Fully containerized local environment and a powerful `Makefile` for automated workflows.
 
 ---
 
-## 🏗 Architecture and Project Structure
+## 🛠️ Tech Stack
 
-The project follows a domain-oriented distribution:
+- **Language:** Go `1.26.4`
+- **Communication:** gRPC & Protocol Buffers (`protoc`)
+- **Database:** PostgreSQL
+- **ORM:** GORM
+- **Configuration Management:** Viper
+- **Logging:** Go's standard `log/slog` (with custom structured & colored formatting)
+- **Local Infrastructure:** Docker & Docker Compose
+- **Code Quality & Security:** `golangci-lint`, Snyk, Gitleaks
+
+---
+
+## 🏗️ Architecture & Project Structure
+
+The project follows a strictly domain-oriented directory layout to enforce Clean Architecture boundaries:
 
 ```text
-├── bin/                 # Support scripts (.sh) for the Makefile
+├── bin/                 # Shell scripts for Makefile automation
 ├── cmd/
 │   └── app/             # Application entry point (main.go)
 ├── internal/
-│   ├── domain/          # Core entities (Event, Queue, Subscription) and ports (interfaces)
-│   ├── infrastructure/  # Input and output adapters (GORM, Viper, Logging, gRPC server)
-│   │   ├── configuration/ # Configuration loading (app.env / environment variables)
-│   │   ├── database/      # Repository implementation (Postgres)
-│   │   ├── gapi/          # gRPC handlers and auto-generated code (.pb.go)
-│   │   └── proto/         # gRPC interface definition (.proto)
+│   ├── domain/          # Core business entities (Event, Queue, Subscription) and Ports (Interfaces)
+│   ├── infrastructure/  # Input/Output Adapters (GORM, Viper, Logging, gRPC server)
+│   │   ├── configuration/ # Configuration loader (config.yaml / Environment Variables)
+│   │   ├── database/      # PostgreSQL Repository implementations
+│   │   ├── gapi/          # gRPC Handlers and auto-generated code (.pb.go)
+│   │   └── proto/         # gRPC interface definitions (.proto)
 │   └── testsuite/       # Integration tests and infrastructure testing
-├── localhost/           # Local development environment (docker-compose.yaml and hooks)
+├── localhost/           # Local development environment (docker-compose.yaml & git hooks)
 ├── Makefile             # Main orchestrator for commands and tasks
-├── .golangci.yml        # Linter configuration for Go
+├── .golangci.yml        # Go linter configuration
 └── go.mod               # Go module dependencies
 ```
 
 ---
 
-## 🛠 Configuración
+## ⚙️ Configuration
 
-El servicio se configura primariamente a través de un archivo `app.env` en la raíz del proyecto o mediante **Variables de Entorno**. Las variables de entorno tienen prioridad.
+The service is configured primarily through a `config.yaml` file located in the root directory, or via **Environment Variables**. Environment variables take precedence over the configuration file.
 
-| Variable | Descripción | Ejemplo |
+| Environment Variable | Description | Example |
 | :--- | :--- | :--- |
-| `DATABASE_DSN` | Cadena de conexión a PostgreSQL | `postgres://admin:admin@localhost:5432/goevents?sslmode=disable` |
-| `GRPC_SERVER_ADDRESS` | Dirección y puerto del servidor gRPC | `0.0.0.0:9090` |
+| `DATABASE_DSN` | PostgreSQL connection string | `postgres://admin:admin@localhost:5432/goevents?sslmode=disable` |
+| `GRPC_SERVER_ADDRESS` | Address and port for the gRPC server | `0.0.0.0:9090` |
 
-*(La aplicación se detendrá inmediatamente si no puede cargar la configuración o conectarse a la base de datos)*.
-
----
-
-## 📡 Interfaz gRPC
-
-La interfaz central está definida en `internal/infrastructure/proto/goevents.proto`. El servicio `Eventservice` provee los siguientes métodos RPC:
-
-**Gestión de Eventos:**
-- `CreateEvent`: Registra un evento nuevo (retorna el payload insertado).
-- `GetEvent`: Recupera un evento por su ID.
-- `DeleteEvent`: Elimina un evento de la base de datos.
-- `AllByNameAndSource`: Lista eventos filtrando por nombre y fuente.
-
-**Mensajería (Pub/Sub):**
-- `CreateSubscription`: Crea una suscripción asociando un nombre de suscriptor, el nombre de un evento y su fuente.
-- `PullMessages`: Extrae mensajes encolados asociados a un evento y fuente dados.
-- `AckMessage`: Confirma que un mensaje encolado ha sido procesado exitosamente (Acknowledge).
-
-> Si realizas cambios en el archivo `.proto`, debes regenerar el código ejecutando: `make proto`.
+> ⚠️ *The application will terminate immediately upon startup if it cannot load the configuration or connect to the database.*
 
 ---
 
-## 🚦 Guía de Inicio (Local)
+## 📡 gRPC Interface
 
-### Requisitos Previos
+The core interface is defined in `internal/infrastructure/proto/govent.proto`. The `Eventservice` provides the following RPC methods:
+
+### 📦 Event Management
+- `CreateEvent`: Registers a new event and returns the inserted payload.
+- `GetEvent`: Retrieves a specific event by its ID.
+- `DeleteEvent`: Removes an event from the database.
+- `AllBySlugAndSource`: Lists events filtered by their slug and source.
+
+### 📨 Messaging (Pub/Sub)
+- `CreateSubscription`: Creates a subscription associating a subscriber name with an event name and its source.
+- `PullMessages`: Extracts queued messages associated with a given event and source.
+- `AckMessage`: Confirms that a queued message has been processed successfully (Acknowledge).
+
+> 💡 **Note:** If you make changes to the `.proto` file, you must regenerate the Go code by running: `make proto`.
+
+---
+
+## 🚦 Getting Started (Local Development)
+
+### Prerequisites
 
 - [Go](https://golang.org/) 1.26+
-- [Docker](https://www.docker.com/) y [Docker Compose](https://docs.docker.com/compose/)
-- *Opcional:* Compilador Protobuf (`protoc`) para regenerar código gRPC.
+- [Docker](https://www.docker.com/) and [Docker Compose](https://docs.docker.com/compose/)
+- *(Optional)* Protobuf Compiler (`protoc`) to regenerate gRPC code.
 
-### Pasos para ejecutar
+### Running the Application
 
-1. **Levantar la Infraestructura Local:**
-   Levanta la instancia de PostgreSQL utilizando el entorno local:
+1. **Spin up the Local Infrastructure:**
+   Start the PostgreSQL container using the local environment setup:
    ```bash
    make db-start
    ```
 
-2. **Crear la Base de Datos:**
-   Una vez que el contenedor de la BD esté corriendo, crea la base de datos de la aplicación:
+2. **Create the Database:**
+   Once the DB container is running, create the application database:
    ```bash
    make db-create
    ```
 
-3. **Descargar Dependencias:**
+3. **Install Dependencies:**
    ```bash
    make tidy
    ```
 
-4. **Ejecutar la Aplicación:**
+4. **Start the Application:**
    ```bash
    make start
    ```
-   *Al iniciar, la aplicación ejecutará las automigraciones de GORM (creando/actualizando las tablas `events`, `queue_messages` y `subscriptions`) y escuchará peticiones en el puerto configurado.*
+   *Upon startup, the application will automatically run GORM migrations (creating/updating the `events`, `queues`, and `subscriptions` tables) and begin listening for gRPC requests on the configured port.*
 
 ---
 
-## 💻 Comandos de Desarrollo (Makefile)
+## 💻 Development Commands (Makefile)
 
-El proyecto incluye un `Makefile` muy completo para simplificar el ciclo de desarrollo. Ejecuta `make` o `make help` para ver el listado interactivo.
+The project includes a comprehensive `Makefile` to simplify the development lifecycle. Run `make` or `make help` to see the interactive list of commands.
 
-### ⚙️ Aplicación Principal
-| Comando | Descripción |
+### ⚙️ Core Application
+| Command | Description |
 | :--- | :--- |
-| `make start` | Inicia la aplicación localmente. |
-| `make build` | Genera el binario final de la aplicación en la carpeta `dist`. |
-| `make test` | Ejecuta la suite de pruebas de la aplicación. |
-| `make proto` | Genera los archivos de código de Go a partir de los archivos `.proto`. |
-| `make tidy` | Limpia y actualiza las dependencias de Go (`go mod tidy`). |
+| `make start` | Starts the application locally. |
+| `make build` | Genera the final application binary in the `dist` folder. |
+| `make test` | Executes the application's test suite. |
+| `make proto` | Generates Go code from the `.proto` files. |
+| `make tidy` | Cleans and updates Go module dependencies (`go mod tidy`). |
 
-### 🗄️ Base de Datos
-| Comando | Descripción |
+### 🗄️ Database Management
+| Command | Description |
 | :--- | :--- |
-| `make db-start` / `db-stop` | Inicia o detiene el contenedor de base de datos. |
-| `make db-create` / `db-drop` | Crea o elimina por completo (drop) la base de datos. |
+| `make db-start` | Starts the local database container. |
+| `make db-stop` | Stops the local database container. |
+| `make db-create` | Creates the necessary database for the application. |
+| `make db-drop` | Completely drops the application database. |
 
-### 🔍 Código y Calidad
-| Comando | Descripción |
+### 🔍 Code Quality & Formatting
+| Command | Description |
 | :--- | :--- |
-| `make lint` | Analiza el código Go con `golangci-lint`. |
-| `make lint-fix` | Formatea el código automáticamente (`gofmt`, `goimports`). |
-| `make support-install-linter` | Instala la herramienta `golangci-lint`. |
+| `make lint` | Analyzes Go code using `golangci-lint`. |
+| `make lint-fix` | Automatically formats the code (`gofmt`, `goimports`). |
+| `make support-install-linter` | Installs the `golangci-lint` tool locally. |
 
-### 🛡️ AppSec (Seguridad)
-| Comando | Descripción |
+### 🛡️ AppSec (Security)
+| Command | Description |
 | :--- | :--- |
-| `make appsec-install` | Instala herramientas de seguridad (Snyk, Gitleaks). |
-| `make appsec-test` | Ejecuta pruebas de vulnerabilidades y escaneo de secretos. |
+| `make appsec-install` | Installs security tools (Snyk, Gitleaks). |
+| `make appsec-test` | Runs vulnerability tests and secret scanning. |
+
+---
+
+<div align="center">
+  <i>Built with ❤️ using Go & gRPC</i>
+</div>
