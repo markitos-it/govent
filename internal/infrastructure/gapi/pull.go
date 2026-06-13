@@ -30,11 +30,11 @@ func (s *Server) PullMessages(ctx context.Context, req *PullMessagesRequest) (*P
 	var protoMessages []*QueueMessage
 	for _, msg := range dbMessages {
 		protoMessages = append(protoMessages, &QueueMessage{
-			QueueId: msg.Id,
-			EventId: msg.EventId,
-			Name:    msg.SubscriberName,
-			Source:  "fakesource",
-			Payload: "fakepayload",
+			Id:             msg.Id,
+			EventId:        msg.EventId,
+			SubscriberName: msg.SubscriberName,
+			Status:         string(msg.Status),
+			Payload:        "fakepayload",
 		})
 	}
 

@@ -12,6 +12,7 @@ import (
 	"go-vents/internal/infrastructure/database"
 	slogcolored "go-vents/internal/infrastructure/logging/slog-colored"
 
+	spannergorm "github.com/googleapis/go-gorm-spanner"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -27,12 +28,16 @@ var (
 // [.'.]:> Usa la misma configuración que el código de producción
 // [.'.]:> Si hay variables de entorno, tienen prioridad sobre el archivo de configuración
 func GetDB() *gorm.DB {
+	if os.Getenv("DATABASE_DRIVER") == "spanner" {
+		return nil
+	}
+
 	dbOnce.Do(func() {
 		var dsn string
 		var configSource string
 
 		log.Println("['.']:> ==============================================")
-		log.Println("['.']:> 🧪 INICIALIZANDO ENTORNO DE PRUEBAS 🧪")
+		log.Println("['.']:> 🧪 INICIALIZANDO ENTORNO DE PRUEBAS (POSTGRES) 🧪")
 		log.Println("['.']:> ==============================================")
 
 		if envDSN := os.Getenv("DATABASE_DSN"); envDSN != "" {
@@ -79,14 +84,28 @@ func GetDB() *gorm.DB {
 	return dbInstance
 }
 
-// [.'.]:> 🔄 Obtiene el repositorio para pruebas
-// [.'.]:> Reutiliza la conexión a la base de datos
 func GetRepository() types.EventRepository {
 	repoOnce.Do(func() {
-		db := GetDB()
-		repo := database.NewEventPostgresRepository(db)
-		repoInstance = repo
-		log.Printf("['.']:> 📦 Repositorio de prueba inicializado")
+		if os.Getenv("DATABASE_DRIVER") == "spanner" {
+			log.Println("['.']:> ==============================================")
+			log.Println("['.']:> 🧪 INICIALIZANDO ENTORNO DE PRUEBAS (SPANNER) 🧪")
+			log.Println("['.']:> ==============================================")
+			dsn := os.Getenv("DATABASE_DSN")
+			db, err := gorm.Open(spannergorm.New(spannergorm.Config{
+				DriverName: "spanner",
+				DSN:        dsn,
+			}), &gorm.Config{})
+			if err != nil {
+				log.Fatalf("['.']:> Error conectando a Spanner: %v", err)
+			}
+			repoInstance = database.NewEventSpannerRepository(db)
+			log.Printf("['.']:> 📦 Repositorio de prueba inicializado (Spanner)")
+		} else {
+			db := GetDB()
+			repo := database.NewEventPostgresRepository(db)
+			repoInstance = repo
+			log.Printf("['.']:> 📦 Repositorio de prueba inicializado (Postgres)")
+		}
 	})
 
 	return repoInstance

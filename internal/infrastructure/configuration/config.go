@@ -25,6 +25,7 @@ import (
 // [.'.]:> 🧩 Estructura que contiene toda la configuración de la aplicación
 // [.'.]:> Cada campo se mapea a una variable de entorno o valor en app.env del mismo nombre
 type EventConfiguration struct {
+	DatabaseDriver    string `mapstructure:"DATABASE_DRIVER"`
 	DatabaseDsn       string `mapstructure:"DATABASE_DSN"`
 	GRPCServerAddress string `mapstructure:"GRPC_SERVER_ADDRESS"`
 }
@@ -37,6 +38,7 @@ func LoadConfiguration(configFilesPath string, logger types.Logger) (config Even
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath(configFilesPath)
+	_ = viper.BindEnv("DATABASE_DRIVER")
 	_ = viper.BindEnv("DATABASE_DSN")
 	_ = viper.BindEnv("GRPC_SERVER_ADDRESS")
 	viper.AutomaticEnv()
@@ -80,6 +82,11 @@ func loadConfigFile(logger types.Logger) error {
 // [.'.]:> Esta es la clave para que las variables de entorno tengan prioridad
 // [.'.]:> sobre el archivo de configuración
 func overrideWithEnvVars() {
+	driverEnv := os.Getenv("DATABASE_DRIVER")
+	if driverEnv != "" && viper.GetString("DATABASE_DRIVER") == "" {
+		viper.Set("DATABASE_DRIVER", driverEnv)
+	}
+
 	dsnEnv := os.Getenv("DATABASE_DSN")
 	if dsnEnv != "" && viper.GetString("DATABASE_DSN") == "" {
 		viper.Set("DATABASE_DSN", dsnEnv)
@@ -95,6 +102,9 @@ func overrideWithEnvVars() {
 // [.'.]:> como última red de seguridad para los campos que aún estén vacíos
 // [.'.]:> después de procesar el archivo y las variables a través de viper
 func applyFallbackEnvVars(config *EventConfiguration) {
+	if config.DatabaseDriver == "" {
+		config.DatabaseDriver = os.Getenv("DATABASE_DRIVER")
+	}
 	if config.DatabaseDsn == "" {
 		config.DatabaseDsn = os.Getenv("DATABASE_DSN")
 	}

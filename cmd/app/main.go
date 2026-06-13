@@ -17,6 +17,8 @@ import (
 	"go-vents/internal/infrastructure/gapi"
 	slogcolored "go-vents/internal/infrastructure/logging/slog-colored"
 
+	spannergorm "github.com/googleapis/go-gorm-spanner"
+	_ "github.com/googleapis/go-sql-spanner"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 
@@ -85,6 +87,27 @@ func loadConfiguration(logger types.Logger) {
 // #[.'.]:> STEP 3: Create a repository instance with the database connection
 // #[.'.]:> The repository encapsulates all data access logic
 func loadDatabase(logger types.Logger) {
+	if config.DatabaseDriver == "spanner" {
+
+		dbSpanner, err := gorm.Open(spannergorm.New(spannergorm.Config{
+			DriverName: "spanner",
+			DSN:        config.DatabaseDsn,
+		}), &gorm.Config{})
+		if err != nil {
+			logger.Fatal("['.']:> error unable to connect to spanner via gorm:" + err.Error())
+		}
+
+		err = dbSpanner.AutoMigrate(&types.Event{}, &types.Queue{}, &types.Subscription{})
+		if err != nil {
+			logger.Fatal("['.']:> error unable to migrate spanner database:" + err.Error())
+		}
+		logger.Info("['.']:>------- spanner tables migrated using structs (singular)")
+
+		repository = database.NewEventSpannerRepository(dbSpanner)
+		logger.Info("['.']:>------- spanner database initialized")
+		return
+	}
+
 	customLogger := gormLogger.New(
 		log.New(os.Stdout, "\r\n", log.LstdFlags),
 		gormLogger.Config{

@@ -2,6 +2,7 @@ package database_test
 
 import (
 	"context"
+	"os"
 	"testing"
 	"time"
 
@@ -15,6 +16,9 @@ import (
 )
 
 func TestEventCreate(t *testing.T) {
+	if os.Getenv("DATABASE_DRIVER") == "spanner" {
+		t.Skip("Skipping Postgres test when using Spanner driver")
+	}
 	var event = internal_test.NewRandomEvent()
 	err := testdb.GetRepository().Create(context.TODO(), event)
 	require.NoError(t, err)
@@ -31,6 +35,9 @@ func TestEventCreate(t *testing.T) {
 }
 
 func TestEventDelete(t *testing.T) {
+	if os.Getenv("DATABASE_DRIVER") == "spanner" {
+		t.Skip("Skipping Postgres test when using Spanner driver")
+	}
 	var event = internal_test.NewRandomEvent()
 	_ = testdb.GetRepository().Create(context.TODO(), event)
 
@@ -42,6 +49,9 @@ func TestEventDelete(t *testing.T) {
 }
 
 func TestEventOne(t *testing.T) {
+	if os.Getenv("DATABASE_DRIVER") == "spanner" {
+		t.Skip("Skipping Postgres test when using Spanner driver")
+	}
 	var event = internal_test.NewRandomEvent()
 	_ = testdb.GetRepository().Create(context.TODO(), event)
 

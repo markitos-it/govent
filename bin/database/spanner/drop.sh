@@ -8,6 +8,7 @@ docker run --rm --network container:go-events-spanner google/cloud-sdk:alpine /b
   export SPANNER_EMULATOR_HOST=localhost:9010;
   gcloud config set auth/disable_credentials true > /dev/null 2>&1;
   gcloud config set project local-project > /dev/null 2>&1;
+  gcloud config set api_endpoint_overrides/spanner http://localhost:9020/ > /dev/null 2>&1;
   
   gcloud spanner databases delete goevents --instance=local-instance --quiet 2>/dev/null || echo '   ⚠️ Database does not exist or has already been deleted.'
 "

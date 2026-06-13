@@ -16,10 +16,10 @@ message Event {
 }
 
 message QueueMessage {
-  string queue_id = 1;
-  string event_id = 2;
-  string name = 3;
-  string source = 4;
+  string id = 1;
+  string subscriber_name = 2;
+  string event_id = 3;
+  string status = 4;
   string payload = 5;
 }
 

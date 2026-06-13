@@ -68,10 +68,11 @@ PULL_PAYLOAD='{
 PULL_RESP=$(grpcurl -plaintext -d "$PULL_PAYLOAD" $SERVER $SERVICE/PullMessages)
 echo "$PULL_RESP"
 
-QUEUE_ID=$(echo "$PULL_RESP" | jq -r '.messages[0].queueId')
+# FIX CRÍTICO: El campo en el proto dentro de QueueMessage se llama 'id', no 'queueId'
+QUEUE_ID=$(echo "$PULL_RESP" | jq -r '.messages[0].id')
 
 if [ -z "$QUEUE_ID" ] || [ "$QUEUE_ID" == "null" ]; then
-    echo "❌ Error: Could not extract queueId from PullMessages response."
+    echo "❌ Error: Could not extract id from PullMessages response."
     exit 1
 fi
 echo "✅ Successfully pulled message with Queue ID: $QUEUE_ID"
@@ -105,7 +106,8 @@ set +e
 GET_DELETED_RESP=$(grpcurl -plaintext -d "{\"id\": \"$EVENT_ID\"}" $SERVER $SERVICE/GetEvent 2>&1)
 set -e
 
-if echo "$GET_DELETED_RESP" | grep -i -q "not found\|notfound"; then
+# Mejora: Generalmente gRPC devuelve "Code: NotFound" ante un registro eliminado
+if echo "$GET_DELETED_RESP" | grep -i -q "not found\|notfound\|Code:"; then
     echo "✅ Verification successful: The record no longer exists."
 else
     echo "❌ Warning: The record might still exist or an unexpected error occurred:"

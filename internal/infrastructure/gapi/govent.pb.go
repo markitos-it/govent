@@ -107,14 +107,14 @@ func (x *Event) GetPayload() string {
 }
 
 type QueueMessage struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	QueueId       string                 `protobuf:"bytes,1,opt,name=queue_id,json=queueId,proto3" json:"queue_id,omitempty"`
-	EventId       string                 `protobuf:"bytes,2,opt,name=event_id,json=eventId,proto3" json:"event_id,omitempty"`
-	Name          string                 `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
-	Source        string                 `protobuf:"bytes,4,opt,name=source,proto3" json:"source,omitempty"`
-	Payload       string                 `protobuf:"bytes,5,opt,name=payload,proto3" json:"payload,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	Id             string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	SubscriberName string                 `protobuf:"bytes,2,opt,name=subscriber_name,json=subscriberName,proto3" json:"subscriber_name,omitempty"`
+	EventId        string                 `protobuf:"bytes,3,opt,name=event_id,json=eventId,proto3" json:"event_id,omitempty"`
+	Status         string                 `protobuf:"bytes,4,opt,name=status,proto3" json:"status,omitempty"`
+	Payload        string                 `protobuf:"bytes,5,opt,name=payload,proto3" json:"payload,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *QueueMessage) Reset() {
@@ -147,9 +147,16 @@ func (*QueueMessage) Descriptor() ([]byte, []int) {
 	return file_govent_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *QueueMessage) GetQueueId() string {
+func (x *QueueMessage) GetId() string {
 	if x != nil {
-		return x.QueueId
+		return x.Id
+	}
+	return ""
+}
+
+func (x *QueueMessage) GetSubscriberName() string {
+	if x != nil {
+		return x.SubscriberName
 	}
 	return ""
 }
@@ -161,16 +168,9 @@ func (x *QueueMessage) GetEventId() string {
 	return ""
 }
 
-func (x *QueueMessage) GetName() string {
+func (x *QueueMessage) GetStatus() string {
 	if x != nil {
-		return x.Name
-	}
-	return ""
-}
-
-func (x *QueueMessage) GetSource() string {
-	if x != nil {
-		return x.Source
+		return x.Status
 	}
 	return ""
 }
@@ -1003,12 +1003,12 @@ const file_govent_proto_rawDesc = "" +
 	"\n" +
 	"updated_at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\x12\x16\n" +
 	"\x06source\x18\x05 \x01(\tR\x06source\x12\x18\n" +
-	"\apayload\x18\x06 \x01(\tR\apayload\"\x8a\x01\n" +
-	"\fQueueMessage\x12\x19\n" +
-	"\bqueue_id\x18\x01 \x01(\tR\aqueueId\x12\x19\n" +
-	"\bevent_id\x18\x02 \x01(\tR\aeventId\x12\x12\n" +
-	"\x04name\x18\x03 \x01(\tR\x04name\x12\x16\n" +
-	"\x06source\x18\x04 \x01(\tR\x06source\x12\x18\n" +
+	"\apayload\x18\x06 \x01(\tR\apayload\"\x94\x01\n" +
+	"\fQueueMessage\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12'\n" +
+	"\x0fsubscriber_name\x18\x02 \x01(\tR\x0esubscriberName\x12\x19\n" +
+	"\bevent_id\x18\x03 \x01(\tR\aeventId\x12\x16\n" +
+	"\x06status\x18\x04 \x01(\tR\x06status\x12\x18\n" +
 	"\apayload\x18\x05 \x01(\tR\apayload\"Z\n" +
 	"\x12CreateEventRequest\x12\x12\n" +
 	"\x04slug\x18\x01 \x01(\tR\x04slug\x12\x16\n" +
