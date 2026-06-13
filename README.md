@@ -1,44 +1,44 @@
 # go-events
 
-**go-events** es un microservicio backend desarrollado en Go que implementa un sistema de gestión y enrutamiento de eventos mediante **gRPC**. Está diseñado siguiendo los principios de la **Arquitectura Limpia (Clean Architecture)** para ofrecer un núcleo de negocio altamente testable, desacoplado y escalable.
+**go-events** is a backend microservice developed in Go that implements an event management and routing system using **gRPC**. It is designed following **Clean Architecture** principles to provide a highly testable, decoupled, and scalable business core.
 
-El servicio expone operaciones tanto para la gestión tradicional de recursos (`Event`), como para patrones de mensajería del tipo Pub/Sub (`Subscription`, `PullMessages`, `AckMessage`).
+The service exposes operations for both traditional resource management (`Event`) and Pub/Sub messaging patterns (`Subscription`, `PullMessages`, `AckMessage`).
 
 ---
 
-## 🚀 Tecnologías Principales
+## 🚀 Main Technologies
 
-- **Lenguaje:** Go 1.26.4
-- **Comunicaciones:** gRPC y Protocol Buffers (`protoc`)
-- **Base de Datos:** PostgreSQL
+- **Language:** Go 1.26.4
+- **Communications:** gRPC and Protocol Buffers (`protoc`)
+- **Database:** PostgreSQL
 - **ORM:** GORM
-- **Configuración:** Viper
-- **Logging:** `slog` (con formato coloreado estructurado en el main)
-- **Infraestructura Local:** Docker & Docker Compose
-- **Calidad y Seguridad:** `golangci-lint`, Snyk, Gitleaks
+- **Configuration:** Viper
+- **Logging:** `slog` (with structured colored formatting in main)
+- **Local Infrastructure:** Docker & Docker Compose
+- **Quality and Security:** `golangci-lint`, Snyk, Gitleaks
 
 ---
 
-## 🏗 Arquitectura y Estructura del Proyecto
+## 🏗 Architecture and Project Structure
 
-El proyecto sigue una distribución orientada a dominios:
+The project follows a domain-oriented distribution:
 
 ```text
-├── bin/                 # Scripts de soporte (.sh) para el Makefile
+├── bin/                 # Support scripts (.sh) for the Makefile
 ├── cmd/
-│   └── app/             # Punto de entrada de la aplicación (main.go)
+│   └── app/             # Application entry point (main.go)
 ├── internal/
-│   ├── domain/          # Entidades centrales (Event, Queue, Subscription) y puertos (interfaces)
-│   ├── infrastructure/  # Adaptadores de salida y entrada (GORM, Viper, Logging, gRPC server)
-│   │   ├── configuration/ # Carga de configuración (app.env / variables de entorno)
-│   │   ├── database/      # Implementación del repositorio (Postgres)
-│   │   ├── gapi/          # Handlers gRPC y código autogenerado (.pb.go)
-│   │   └── proto/         # Definición de la interfaz gRPC (.proto)
-│   └── testsuite/       # Tests de integración y pruebas de infraestructura
-├── localhost/           # Entorno de desarrollo local (docker-compose.yaml y hooks)
-├── Makefile             # Orquestador principal de comandos y tareas
-├── .golangci.yml        # Configuración del linter para Go
-└── go.mod               # Dependencias del módulo Go
+│   ├── domain/          # Core entities (Event, Queue, Subscription) and ports (interfaces)
+│   ├── infrastructure/  # Input and output adapters (GORM, Viper, Logging, gRPC server)
+│   │   ├── configuration/ # Configuration loading (app.env / environment variables)
+│   │   ├── database/      # Repository implementation (Postgres)
+│   │   ├── gapi/          # gRPC handlers and auto-generated code (.pb.go)
+│   │   └── proto/         # gRPC interface definition (.proto)
+│   └── testsuite/       # Integration tests and infrastructure testing
+├── localhost/           # Local development environment (docker-compose.yaml and hooks)
+├── Makefile             # Main orchestrator for commands and tasks
+├── .golangci.yml        # Linter configuration for Go
+└── go.mod               # Go module dependencies
 ```
 
 ---
