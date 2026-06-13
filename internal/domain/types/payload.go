@@ -6,26 +6,26 @@ import (
 	"go-vents/internal/domain/shared"
 )
 
-type EventPayload struct {
+type Payload struct {
 	value string
 }
 
-func NewEventPayload(value string) (*EventPayload, error) {
+func NewPayload(value string) (*Payload, error) {
 
-	if isValidEventPayload(value) {
-		return &EventPayload{value}, nil
+	if isValidPayload(value) {
+		return &Payload{value}, nil
 	}
 
 	return nil, shared.ErrEventBadRequest
 }
 
-func isValidEventPayload(value string) bool {
+func isValidPayload(value string) bool {
 	if value == "" {
 		return true
 	}
 	return json.Valid([]byte(value))
 }
 
-func (b *EventPayload) Value() string {
+func (b *Payload) Value() string {
 	return b.value
 }

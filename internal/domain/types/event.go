@@ -17,25 +17,25 @@ type Event struct {
 func NewEvent(id, name, source, payload string) (*Event, error) {
 	secureId, err := NewSharedId(id)
 	if err != nil {
-		log.Printf("❌ DEBUG ERROR (NewEventId): %v\n", err)
+		log.Printf("❌ DEBUG ERROR (Id): %v\n", err)
 		return nil, err
 	}
 
-	secureName, err := NewEventName(name)
+	secureName, err := NewSlug(name)
 	if err != nil {
-		log.Printf("❌ DEBUG ERROR (NewEventName): %v\n", err)
+		log.Printf("❌ DEBUG ERROR (Slug): %v\n", err)
 		return nil, err
 	}
 
-	secureSource, err := NewEventSource(source)
+	secureSource, err := NewSource(source)
 	if err != nil {
-		log.Printf("❌ DEBUG ERROR (NewEventSource): %v\n", err)
+		log.Printf("❌ DEBUG ERROR (Source): %v\n", err)
 		return nil, err
 	}
 
-	securePayload, err := NewEventPayload(payload)
+	securePayload, err := NewPayload(payload)
 	if err != nil {
-		log.Printf("❌ DEBUG ERROR (NewEventPayload): %v\n", err)
+		log.Printf("❌ DEBUG ERROR (Payload): %v\n", err)
 		return nil, err
 	}
 
@@ -49,14 +49,14 @@ func NewEvent(id, name, source, payload string) (*Event, error) {
 	}, nil
 }
 
-func (e *Event) GetName() *EventName {
-	result, _ := NewEventName(e.Name)
+func (e *Event) GetName() *Name {
+	result, _ := NewName(e.Name)
 
 	return result
 }
 
-func (e *Event) GetSource() *EventSource {
-	result, _ := NewEventSource(e.Source)
+func (e *Event) GetSource() *Source {
+	result, _ := NewSource(e.Source)
 
 	return result
 }

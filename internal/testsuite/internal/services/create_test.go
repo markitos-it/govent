@@ -13,7 +13,7 @@ import (
 
 func TestCanCreateAUser(t *testing.T) {
 	var event = types.Event{
-		Name: shared.RandomPersonalName(),
+		Name: shared.RandomSlug(),
 	}
 	var request = services.EventCreateRequest{
 		Name: event.Name,

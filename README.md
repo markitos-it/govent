@@ -49,7 +49,7 @@ El servicio se configura primariamente a través de un archivo `app.env` en la r
 
 | Variable | Descripción | Ejemplo |
 | :--- | :--- | :--- |
-| `DATABASE_DSN` | Cadena de conexión a PostgreSQL | `postgres://admin:admin@localhost:5432/govent?sslmode=disable` |
+| `DATABASE_DSN` | Cadena de conexión a PostgreSQL | `postgres://admin:admin@localhost:5432/goevents?sslmode=disable` |
 | `GRPC_SERVER_ADDRESS` | Dirección y puerto del servidor gRPC | `0.0.0.0:9090` |
 
 *(La aplicación se detendrá inmediatamente si no puede cargar la configuración o conectarse a la base de datos)*.
@@ -58,7 +58,7 @@ El servicio se configura primariamente a través de un archivo `app.env` en la r
 
 ## 📡 Interfaz gRPC
 
-La interfaz central está definida en `internal/infrastructure/proto/govent.proto`. El servicio `Eventservice` provee los siguientes métodos RPC:
+La interfaz central está definida en `internal/infrastructure/proto/goevents.proto`. El servicio `Eventservice` provee los siguientes métodos RPC:
 
 **Gestión de Eventos:**
 - `CreateEvent`: Registra un evento nuevo (retorna el payload insertado).

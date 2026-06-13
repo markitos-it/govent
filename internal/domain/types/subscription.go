@@ -4,13 +4,16 @@ import (
 	"errors"
 	"log"
 	"strings"
+	"time"
 )
 
 type Subscription struct {
-	Id             string `json:"id" binding:"required,uuid"`
-	SubscriberName string `json:"subscriber_name" binding:"required"`
-	EventName      string `json:"event_name" binding:"required"`
-	Source         string `json:"source" binding:"required"`
+	Id             string    `json:"id" binding:"required,uuid"`
+	SubscriberName string    `json:"subscriber_name" binding:"required"`
+	EventName      string    `json:"event_name" binding:"required"`
+	Source         string    `json:"source" binding:"required"`
+	CreatedAt      time.Time `json:"created_at" binding:"required,datetime" default:"now"`
+	UpdatedAt      time.Time `json:"updated_at" binding:"required,datetime" default:"now"`
 }
 
 func NewSubscription(id, subscriberName, eventName, source string) (*Subscription, error) {
@@ -40,9 +43,7 @@ func NewSubscription(id, subscriberName, eventName, source string) (*Subscriptio
 		SubscriberName: strings.TrimSpace(subscriberName),
 		EventName:      strings.TrimSpace(eventName),
 		Source:         strings.TrimSpace(source),
+		CreatedAt:      time.Now(),
+		UpdatedAt:      time.Now(),
 	}, nil
-}
-
-func (Subscription) TableName() string {
-	return "subscriptions"
 }

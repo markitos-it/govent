@@ -20,8 +20,8 @@ type QueueMessage struct {
 	SubscriberName string        `json:"subscriber_name" binding:"required"`
 	EventId        string        `json:"event_id" binding:"required,uuid"`
 	Status         MessageStatus `json:"status" binding:"required"`
-	CreatedAt      time.Time     `json:"created_at" binding:"required,datetime"`
-	UpdatedAt      time.Time     `json:"updated_at" binding:"required,datetime"`
+	CreatedAt      time.Time     `json:"created_at" binding:"required,datetime" default:"now"`
+	UpdatedAt      time.Time     `json:"updated_at" binding:"required,datetime" default:"now"`
 }
 
 func NewQueueMessage(id, subscriberName, eventId string) (*QueueMessage, error) {
@@ -58,8 +58,4 @@ func (q *QueueMessage) MarkAsProcessed() {
 func (q *QueueMessage) MarkAsFailed() {
 	q.Status = StatusFailed
 	q.UpdatedAt = time.Now()
-}
-
-func (QueueMessage) TableName() string {
-	return "queue"
 }

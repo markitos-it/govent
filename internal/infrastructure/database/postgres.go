@@ -80,7 +80,7 @@ func (r *EventPostgresRepository) One(ctx context.Context, id *types.SharedId) (
 	return &event, nil
 }
 
-func (r *EventPostgresRepository) AllByNameAndSource(ctx context.Context, name *types.EventName, source *types.EventSource) ([]*types.Event, error) {
+func (r *EventPostgresRepository) AllByNameAndSource(ctx context.Context, name *types.Name, source *types.Source) ([]*types.Event, error) {
 	var events []*types.Event
 
 	err := r.db.WithContext(ctx).
@@ -123,8 +123,8 @@ func (r *EventPostgresRepository) CreateSubscription(ctx context.Context, sub *t
 
 func (r *EventPostgresRepository) PullMessages(
 	ctx context.Context,
-	eventName *types.EventName,
-	source *types.EventSource,
+	eventName *types.Name,
+	source *types.Source,
 ) ([]*types.QueueMessage, error) {
 
 	var results []*types.QueueMessage

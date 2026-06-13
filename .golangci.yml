@@ -12,7 +12,7 @@
 #
 # FORMATTERS ACTIVADOS:
 # - gofmt:       Verifica que el código esté formateado correctamente (simplify: true)
-# - goimports:   Verifica que los imports estén ordenados agrupando locales (local-prefixes: govent)
+# - goimports:   Verifica que los imports estén ordenados agrupando locales (local-prefixes: goevents)
 #
 # NOTA DE ESTILO: El linter staticcheck te obligará a usar asignación corta (:=) 
 # en variables donde el tipo se infiera directamente para mantener el estilo idiomático de Go.
@@ -50,7 +50,7 @@ formatters:
     gofmt:
       simplify: true
     goimports:
-      local-prefixes: govent
+      local-prefixes: goevents
 
 issues:
   max-issues-per-linter: 0

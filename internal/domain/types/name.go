@@ -6,27 +6,27 @@ import (
 	"go-vents/internal/domain/shared"
 )
 
-type EventName struct {
+type Name struct {
 	value string
 }
 
 const EVENT_NAME_MAX_LENGTH = 100
 const EVENT_NAME_MIN_LENGTH = 3
 
-func NewEventName(value string) (*EventName, error) {
-	if isValidEventName(value) {
-		return &EventName{value}, nil
+func NewName(value string) (*Name, error) {
+	if isValidName(value) {
+		return &Name{value}, nil
 	}
 
 	return nil, shared.ErrEventBadRequest
 }
 
-func isValidEventName(value string) bool {
+func isValidName(value string) bool {
 	if len(value) > EVENT_NAME_MAX_LENGTH || len(value) < EVENT_NAME_MIN_LENGTH {
 		return false
 	}
 
-	pattern := `^[a-zA-Z]{1}[a-zA-Z ]+[a-zA-Z]$|^[a-zA-Z]{1}$`
+	pattern := `^[a-zA-Z0-9]([a-zA-Z0-9 ]*[a-zA-Z0-9])?$`
 	matched, err := regexp.MatchString(pattern, value)
 	if err != nil {
 		return false
@@ -35,6 +35,6 @@ func isValidEventName(value string) bool {
 	return matched
 }
 
-func (b *EventName) Value() string {
+func (b *Name) Value() string {
 	return b.value
 }

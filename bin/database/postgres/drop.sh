@@ -20,9 +20,9 @@ show_banner
 
 log_info "Removing database and associated user"
 
-CONTAINER_NAME="govent-postgres"
+CONTAINER_NAME="goevents-postgres"
 DATABASE_MASTER_USERNAME="admin"
-DATABASE_NEW_SERVICE="govent"
+DATABASE_NEW_SERVICE="goevents"
 
 docker exec -i ${CONTAINER_NAME} psql -U ${DATABASE_MASTER_USERNAME} -d postgres -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '${DATABASE_NEW_SERVICE}';"
 docker exec -i ${CONTAINER_NAME} psql -U ${DATABASE_MASTER_USERNAME} -d postgres -c "DROP DATABASE IF EXISTS ${DATABASE_NEW_SERVICE};"

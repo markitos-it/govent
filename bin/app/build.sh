@@ -21,9 +21,9 @@ show_banner
 
 echo "['.']:> 🔨 Building..."
 mkdir -p dist
-rm -f dist/govent
-go build -o dist/govent cmd/app/main.go
-echo "['.']:> ✅ Binario generado en dist/govent"
+rm -f dist/goevents
+go build -o dist/goevents cmd/app/main.go
+echo "['.']:> ✅ Binario generado en dist/goevents"
 #:[.'.]:>-------------------------------------
 
 log_info "Compiled successfully."

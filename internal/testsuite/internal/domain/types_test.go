@@ -10,6 +10,36 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestCanCreateValidSlug(t *testing.T) {
+	validSlugs := []string{
+		"valid-slug",
+		"ValidSlug",
+		"slug.with.dots",
+		"slug_with_underscores",
+		"a1",
+		"a-b-c",
+	}
+	for _, s := range validSlugs {
+		slug, err := types.NewSlug(s)
+		assert.NoError(t, err, "Expected valid slug for: %s", s)
+		assert.Equal(t, s, slug.Value())
+	}
+
+	invalidSlugs := []string{
+		"",
+		"1slug",
+		"-slug",
+		".slug",
+		"slug-",
+		"slug.",
+		"slug@name",
+	}
+	for _, s := range invalidSlugs {
+		_, err := types.NewSlug(s)
+		assert.Error(t, err, "Expected error for invalid slug: %s", s)
+	}
+}
+
 func TestCanCreateValidEventName(t *testing.T) {
 	validNames := []string{
 		"ValidName",
@@ -18,7 +48,7 @@ func TestCanCreateValidEventName(t *testing.T) {
 		"Short",
 		"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"}
 	for _, name := range validNames {
-		if _, err := types.NewEventName(name); err != nil {
+		if _, err := types.NewName(name); err != nil {
 			t.Errorf("Expected valid name, but got invalid: %s", name)
 		}
 	}
@@ -30,13 +60,12 @@ func TestCanCreateValidEventName(t *testing.T) {
 		" Invalid Name",
 		"Invalid@Name",
 		"Invalid#Name",
-		"Invalid123Name",
 		"Invalid Name With Spaces ",
 		" Invalid Name With Spaces",
 		"Invalid Name With Spaces And Symbols!",
 	}
 	for _, name := range invalidNames {
-		if _, err := types.NewEventName(name); err == nil {
+		if _, err := types.NewName(name); err == nil {
 			t.Errorf("Expected valid name, but got invalid: %s", name)
 		}
 	}
@@ -47,7 +76,7 @@ func TestCanCreateValidEventName(t *testing.T) {
 		"",
 	}
 	for _, name := range invalidLengthNames {
-		if _, err := types.NewEventName(name); err == nil {
+		if _, err := types.NewName(name); err == nil {
 			t.Errorf("Expected invalid name, but got invalid: %s", name)
 		}
 	}
@@ -64,7 +93,7 @@ func TestCanCreateValidEventPayload(t *testing.T) {
 	}
 
 	for _, payload := range validPayloads {
-		if _, err := types.NewEventPayload(payload); err != nil {
+		if _, err := types.NewPayload(payload); err != nil {
 			t.Errorf("Expected valid payload, but got error for: %s", payload)
 		}
 	}
@@ -77,7 +106,7 @@ func TestCanCreateValidEventPayload(t *testing.T) {
 	}
 
 	for _, payload := range invalidPayloads {
-		if _, err := types.NewEventPayload(payload); err == nil {
+		if _, err := types.NewPayload(payload); err == nil {
 			t.Errorf("Expected invalid payload, but got valid for: %s", payload)
 		}
 	}
@@ -97,7 +126,6 @@ func TestCanCreateValidQueueMessage(t *testing.T) {
 	assert.Equal(t, types.StatusPending, qm.Status)
 	assert.NotZero(t, qm.CreatedAt)
 	assert.NotZero(t, qm.UpdatedAt)
-	assert.Equal(t, "queue", qm.TableName())
 }
 
 func TestCantCreateQueueMessageWithEmptyFields(t *testing.T) {
@@ -142,7 +170,6 @@ func TestCanCreateValidSubscription(t *testing.T) {
 	assert.Equal(t, subscriberName, sub.SubscriberName)
 	assert.Equal(t, eventName, sub.EventName)
 	assert.Equal(t, source, sub.Source)
-	assert.Equal(t, "subscriptions", sub.TableName())
 }
 
 func TestCantCreateSubscriptionWithInvalidFields(t *testing.T) {

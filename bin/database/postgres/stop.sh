@@ -17,5 +17,5 @@ show_config "full"
 
 #:[.'.]:>-------------------------------------
 show_banner
-docker stop govent-postgres
+docker stop goevents-postgres
 #:[.'.]:>-------------------------------------

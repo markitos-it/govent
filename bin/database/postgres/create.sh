@@ -18,9 +18,9 @@ show_config "full"
 #:[.'.]:>-------------------------------------
 show_banner
 
-CONTAINER_NAME="govent-postgres"
+CONTAINER_NAME="goevents-postgres"
 DB_USER="admin"
-DB_NEW="govent"
+DB_NEW="goevents"
 
 docker exec -i ${CONTAINER_NAME} psql -U ${DB_USER} -d postgres -c "CREATE DATABASE ${DB_NEW};"
 docker exec -i ${CONTAINER_NAME} psql -U ${DB_USER} -d postgres -c "CREATE USER ${DB_NEW} WITH ENCRYPTED PASSWORD '${DB_NEW}';"

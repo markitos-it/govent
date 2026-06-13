@@ -12,12 +12,12 @@ import (
 const DEFAULT_LIMIT_PULL = 10
 
 func (s *Server) PullMessages(ctx context.Context, req *PullMessagesRequest) (*PullMessagesResponse, error) {
-	event, err := types.NewEventName(req.GetEventName())
+	event, err := types.NewName(req.GetEventName())
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	source, err := types.NewEventSource(req.GetSource())
+	source, err := types.NewSource(req.GetSource())
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}

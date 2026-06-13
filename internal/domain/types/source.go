@@ -4,26 +4,26 @@ import (
 	"go-vents/internal/domain/shared"
 )
 
-type EventSource struct {
+type Source struct {
 	value string
 }
 
 const EVENT_CONTENT_MAX_LENGTH = 200
 const EVENT_CONTENT_MIN_LENGTH = 1
 
-func NewEventSource(value string) (*EventSource, error) {
+func NewSource(value string) (*Source, error) {
 
-	if isValidEventSource(value) {
-		return &EventSource{value}, nil
+	if isValidSource(value) {
+		return &Source{value}, nil
 	}
 
 	return nil, shared.ErrEventBadRequest
 }
 
-func isValidEventSource(value string) bool {
+func isValidSource(value string) bool {
 	return len(value) >= EVENT_CONTENT_MIN_LENGTH || len(value) <= EVENT_CONTENT_MAX_LENGTH
 }
 
-func (b *EventSource) Value() string {
+func (b *Source) Value() string {
 	return b.value
 }

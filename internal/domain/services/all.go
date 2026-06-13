@@ -25,11 +25,11 @@ func NewEventAllService(repository types.EventRepository) EventAllService {
 }
 
 func (s EventAllService) Do(ctx context.Context, request EventAllRequest) (*EventAllResponse, error) {
-	eventName, err := types.NewEventName(request.Name)
+	eventName, err := types.NewName(request.Name)
 	if err != nil {
 		return nil, err
 	}
-	eventSource, err := types.NewEventSource(request.Source)
+	eventSource, err := types.NewSource(request.Source)
 	if err != nil {
 		return nil, err
 	}

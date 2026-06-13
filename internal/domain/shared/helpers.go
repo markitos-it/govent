@@ -64,6 +64,30 @@ func RandomWord(howManyChars ...int) string {
 	return string(result)
 }
 
+func RandomSlug() string {
+	const firstChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	const middleChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789._-"
+	const lastChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+
+	num, _ := rand.Int(rand.Reader, big.NewInt(20))
+	length := int(num.Int64()) + 2
+
+	result := make([]byte, length)
+
+	n, _ := rand.Int(rand.Reader, big.NewInt(int64(len(firstChars))))
+	result[0] = firstChars[n.Int64()]
+
+	for i := 1; i < length-1; i++ {
+		n, _ = rand.Int(rand.Reader, big.NewInt(int64(len(middleChars))))
+		result[i] = middleChars[n.Int64()]
+	}
+
+	n, _ = rand.Int(rand.Reader, big.NewInt(int64(len(lastChars))))
+	result[length-1] = lastChars[n.Int64()]
+
+	return string(result)
+}
+
 func RandomPersonalName() string {
 	minWords, maxWords := 1, 6
 	wordCount, _ := rand.Int(rand.Reader, big.NewInt(int64(maxWords-minWords+1)))

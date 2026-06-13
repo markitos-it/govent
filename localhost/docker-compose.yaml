@@ -1,18 +1,18 @@
 services:
   postgres:
     image: postgres:17-alpine
-    container_name: govent-postgres
+    container_name: goevents-postgres
     restart: always
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: admin
-      POSTGRES_DB: govent
+      POSTGRES_DB: goevents
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U admin -d govent || exit 1"]
+      test: ["CMD-SHELL", "pg_isready -U admin -d goevents || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -42,8 +42,8 @@ services:
         echo 'Creating Spanner instance...';
         gcloud spanner instances create local-instance --config=emulator-config --description='Local Instance' --nodes=1;
         
-        echo 'Creating govent database...';
-        gcloud spanner databases create govent --instance=local-instance;
+        echo 'Creating goevents database...';
+        gcloud spanner databases create goevents --instance=local-instance;
         
         echo 'Spanner emulator ready for connections!';
       "
