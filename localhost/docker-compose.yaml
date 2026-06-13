@@ -42,9 +42,6 @@ services:
         echo 'Creating Spanner instance...';
         gcloud spanner instances create local-instance --config=emulator-config --description='Local Instance' --nodes=1;
         
-        echo 'Creating goevents database...';
-        gcloud spanner databases create goevents --instance=local-instance;
-        
         echo 'Spanner emulator ready for connections!';
       "
 

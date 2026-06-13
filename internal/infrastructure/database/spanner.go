@@ -99,7 +99,7 @@ func (r *EventSpannerRepository) PullMessages(ctx context.Context, slug *types.S
 
 func (r *EventSpannerRepository) AckMessage(ctx context.Context, id *types.SharedId) error {
 	result := r.db.WithContext(ctx).
-		Table("queue").
+		Model(&types.Queue{}).
 		Where("id = ? AND status = ?", id.Value(), "pending").
 		Updates(map[string]interface{}{
 			"status":     "processed",
