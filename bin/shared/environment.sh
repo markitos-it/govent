@@ -3,7 +3,7 @@
 # Centralized environment configuration
 
 DEFAULT_DATABASE_HOST="localhost"
-DEFAULT_DATABASE_DRIVER="mariadb"
+DEFAULT_DATABASE_DRIVER="postgres"
 DEFAULT_DATABASE_USER="goevents"
 DEFAULT_DATABASE_PASSWORD="goevents"
 DEFAULT_DATABASE_NAME="goevents"

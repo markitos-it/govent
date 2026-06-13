@@ -41,8 +41,9 @@ func GetDB() *gorm.DB {
 			driver = "postgres"
 		}
 
+		cleanDriver := strings.ReplaceAll(strings.ReplaceAll(driver, "\n", ""), "\r", "")
 		log.Println("['.']:> ==============================================")
-		log.Printf("['.']:> 🧪 INICIALIZANDO ENTORNO DE PRUEBAS (%s) 🧪\n", strings.ToUpper(driver))
+		log.Println("['.']:> 🧪 INICIALIZANDO ENTORNO DE PRUEBAS (" + strings.ToUpper(cleanDriver) + ") 🧪")
 		log.Println("['.']:> ==============================================")
 
 		if envDSN := os.Getenv("DATABASE_DSN"); envDSN != "" {
