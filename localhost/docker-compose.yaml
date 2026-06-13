@@ -17,6 +17,38 @@ services:
       timeout: 5s
       retries: 5
 
+  spanner-emulator:
+    image: gcr.io/cloud-spanner-emulator/emulator:latest
+    container_name: go-events-spanner
+    ports:
+      - "9010:9010"
+      - "9020:9020"
+
+  spanner-init:
+    image: google/cloud-sdk:alpine
+    container_name: go-events-spanner-init
+    depends_on:
+      - spanner-emulator
+    environment:
+      - SPANNER_EMULATOR_HOST=spanner-emulator:9010
+    entrypoint: >
+      /bin/sh -c "
+        echo 'Waiting for Spanner emulator...';
+        while ! nc -z spanner-emulator 9010; do sleep 1; done;
+        echo 'Configuring gcloud for emulator...';
+        gcloud config set auth/disable_credentials true;
+        gcloud config set project local-project;
+        
+        echo 'Creating Spanner instance...';
+        gcloud spanner instances create local-instance --config=emulator-config --description='Local Instance' --nodes=1;
+        
+        echo 'Creating govent database...';
+        gcloud spanner databases create govent --instance=local-instance;
+        
+        echo 'Spanner emulator ready for connections!';
+      "
+
+
 volumes:
   postgres_data:
     driver: local
