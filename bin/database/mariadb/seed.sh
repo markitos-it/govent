@@ -65,7 +65,7 @@ EOF
     # El payload ahora envía la iteración como texto ("A", "B") y remueve caracteres numéricos
     EVENT_PAYLOAD=$(cat <<EOF
 {
-  "name": "$EVENT_NAME",
+  "slug": "$EVENT_NAME",
   "source": "$SOURCE_NAME",
   "payload": "{\"iteration\": \"$LETTERS_ID\", \"message\": \"Mensaje autogenerado en letras\"}"
 }
