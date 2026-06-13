@@ -24,7 +24,9 @@ jobs:
           cache: true
 
       - name: Start Postgres Database
-        run: make db-start
+        run: |
+          make db-start
+          echo "✅ **Start Postgres Database** completado." >> $GITHUB_STEP_SUMMARY
 
       - name: Wait for Postgres to be healthy
         run: |
@@ -33,6 +35,7 @@ jobs:
             sleep 1
           done
           echo "✅ ¡Postgres está 100% operativo!"
+          echo "✅ **Wait for Postgres to be healthy** completado." >> $GITHUB_STEP_SUMMARY
 
       - name: Create Database
         id: db-create
@@ -43,6 +46,7 @@ jobs:
         run: |
           docker exec -i govent-postgres psql -U admin -d postgres -c "DROP DATABASE IF EXISTS govent;"
           make db-create
+          echo "✅ **Create Database** completado." >> $GITHUB_STEP_SUMMARY
 
       - name: Start API Server & Wait for Port 30000
         id: api-start
@@ -56,6 +60,7 @@ jobs:
           done
           if nc -z 127.0.0.1 30000; then
             echo "✅ ¡El API ha levantado con éxito y las tablas están listas!"
+            echo "✅ **Start API Server & Wait for Port 30000** completado." >> $GITHUB_STEP_SUMMARY
           else
             echo "❌ ERROR: El API no logró iniciar en el puerto 30000 a tiempo."
             exit 1
@@ -63,34 +68,41 @@ jobs:
 
       - name: Run Unit Tests
         id: unit-tests
-        run: make test
+        run: |
+          make test
+          echo "✅ **Run Unit Tests** completado." >> $GITHUB_STEP_SUMMARY
 
       - name: Install Security & Linting Tools (Snyk, Gitleaks, GolangCI-Lint)
         id: tools-install
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "📦 Instalando Snyk a través de NPM..."
           npm install -g snyk
           
           echo "📦 Instalando Gitleaks (Última versión)..."
-          GITLEAKS_VERSION=$(curl -s https://api.github.com/repos/gitleaks/gitleaks/releases/latest | grep tag_name | cut -d '"' -f 4 | sed 's/v//')
+          GITLEAKS_VERSION=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" https://api.github.com/repos/gitleaks/gitleaks/releases/latest | grep tag_name | cut -d '"' -f 4 | sed 's/v//')
           curl -sSfL "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" | tar -xz
           sudo cp gitleaks /usr/local/bin/
 
           echo "📦 Instalando GolangCI-Lint (Última versión compatible con Go 1.26+)..."
-          GOLANGCI_VERSION=$(curl -s https://api.github.com/repos/golangci/golangci-lint/releases/latest | grep tag_name | cut -d '"' -f 4 | sed 's/v//')
+          GOLANGCI_VERSION=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" https://api.github.com/repos/golangci/golangci-lint/releases/latest | grep tag_name | cut -d '"' -f 4 | sed 's/v//')
           curl -sSfL "https://github.com/golangci/golangci-lint/releases/download/v${GOLANGCI_VERSION}/golangci-lint-${GOLANGCI_VERSION}-linux-amd64.tar.gz" | tar -xz
           sudo cp "golangci-lint-${GOLANGCI_VERSION}-linux-amd64/golangci-lint" /usr/local/bin/
           
           echo "🧹 Limpiando archivos temporales..."
           rm -rf gitleaks golangci-lint-${GOLANGCI_VERSION}-linux-amd64
           rm -rf LICENSE README.md
+          echo "✅ **Install Security & Linting Tools** completado." >> $GITHUB_STEP_SUMMARY
 
       # 9. Lanzar suite de seguridad nativa
       - name: Run Application Security Tests
         id: appsec
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        run: make appsec-test
+        run: |
+          make appsec-test
+          echo "✅ **Run Application Security Tests** completado." >> $GITHUB_STEP_SUMMARY
 
       # 10. Generar el reporte visual en la interfaz de GitHub
       - name: Generate Beautiful Job Summary
