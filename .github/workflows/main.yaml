@@ -18,24 +18,25 @@ jobs:
           fetch-depth: 0
 
       - name: Set up Go
+        id: setup-go
         uses: actions/setup-go@v5
         with:
           go-version: '1.26.4'
           cache: true
 
       - name: Start Postgres Database
+        id: db-start
         run: |
           make db-start
-          echo "✅ **Start Postgres Database** completado." >> $GITHUB_STEP_SUMMARY
 
       - name: Wait for Postgres to be healthy
+        id: db-healthy
         run: |
-          echo "⏳ Esperando a que el contenedor reporte estado HEALTHY..."
+          echo "⏳ Waiting for container to report HEALTHY status..."
           until [ "$(docker inspect --format='{{json .State.Health.Status}}' goevents-postgres)" == "\"healthy\"" ]; do
             sleep 1
           done
-          echo "✅ ¡Postgres está 100% operativo!"
-          echo "✅ **Wait for Postgres to be healthy** completado." >> $GITHUB_STEP_SUMMARY
+          echo "✅ Postgres is 100% operational!"
 
       - name: Create Database
         id: db-create
@@ -46,28 +47,26 @@ jobs:
         run: |
           docker exec -i goevents-postgres psql -U admin -d postgres -c "DROP DATABASE IF EXISTS goevents;"
           make db-create
-          echo "✅ **Create Database** completado." >> $GITHUB_STEP_SUMMARY
 
       - name: Tidy Go Modules
+        id: tidy
         run: |
           make tidy
-          echo "✅ **Tidy Go Modules** completado." >> $GITHUB_STEP_SUMMARY
 
       - name: Start API Server & Wait for Port 30000
         id: api-start
         run: |
           make start > api_server.log 2>&1 &
-          echo "⏳ Esperando de forma dinámica a que el API responda en el puerto 30000..."
+          echo "⏳ Waiting dynamically for the API to respond on port 30000..."
           FORKS=0
           until nc -z 127.0.0.1 30000 || [ $FORKS -eq 60 ]; do
             sleep 1
             FORKS=$((FORKS + 1))
           done
           if nc -z 127.0.0.1 30000; then
-            echo "✅ ¡El API ha levantado con éxito y las tablas están listas!"
-            echo "✅ **Start API Server & Wait for Port 30000** completado." >> $GITHUB_STEP_SUMMARY
+            echo "✅ API successfully started and tables are ready!"
           else
-            echo "❌ ERROR: El API no logró iniciar en el puerto 30000 a tiempo."
+            echo "❌ ERROR: API failed to start on port 30000 in time."
             cat api_server.log
             exit 1
           fi
@@ -76,41 +75,43 @@ jobs:
         id: unit-tests
         run: |
           make test
-          echo "✅ **Run Unit Tests** completado." >> $GITHUB_STEP_SUMMARY
 
       - name: Install Security & Linting Tools (Snyk, Gitleaks, GolangCI-Lint)
         id: tools-install
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "📦 Instalando Snyk a través de NPM..."
+          echo "📦 Installing Snyk via NPM..."
           npm install -g snyk
           
-          echo "📦 Instalando Gitleaks (Última versión)..."
+          echo "📦 Installing Gitleaks (Latest version)..."
           GITLEAKS_VERSION=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" https://api.github.com/repos/gitleaks/gitleaks/releases/latest | grep tag_name | cut -d '"' -f 4 | sed 's/v//')
           curl -sSfL "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" | tar -xz
           sudo cp gitleaks /usr/local/bin/
 
-          echo "📦 Instalando GolangCI-Lint (Última versión compatible con Go 1.26+)..."
+          echo "📦 Installing GolangCI-Lint (Latest version compatible with Go 1.26+)..."
           GOLANGCI_VERSION=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" https://api.github.com/repos/golangci/golangci-lint/releases/latest | grep tag_name | cut -d '"' -f 4 | sed 's/v//')
           curl -sSfL "https://github.com/golangci/golangci-lint/releases/download/v${GOLANGCI_VERSION}/golangci-lint-${GOLANGCI_VERSION}-linux-amd64.tar.gz" | tar -xz
           sudo cp "golangci-lint-${GOLANGCI_VERSION}-linux-amd64/golangci-lint" /usr/local/bin/
           
-          echo "🧹 Limpiando archivos temporales..."
+          echo "🧹 Cleaning temporary files..."
           rm -rf gitleaks golangci-lint-${GOLANGCI_VERSION}-linux-amd64
           rm -rf LICENSE README.md
-          echo "✅ **Install Security & Linting Tools** completado." >> $GITHUB_STEP_SUMMARY
 
-      # 9. Lanzar suite de seguridad nativa
       - name: Run Application Security Tests
         id: appsec
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         run: |
+          # Execute the test and capture its true exit code
           make appsec-test
-          echo "✅ **Run Application Security Tests** completado." >> $GITHUB_STEP_SUMMARY
+          EXIT_CODE=$?
+          
+          if [ $EXIT_CODE -ne 0 ]; then
+            echo "❌ AppSec suite detected security vulnerabilities."
+            exit $EXIT_CODE
+          fi
 
-      # 10. Generar el reporte visual en la interfaz de GitHub
       - name: Generate Beautiful Job Summary
         if: always()
         run: |
@@ -126,15 +127,18 @@ jobs:
             fi
           }
           
-          echo "## 🚀 Goevents DevSecOps - Reporte de Ejecución" >> $GITHUB_STEP_SUMMARY
-          echo "---" >> $GITHUB_STEP_SUMMARY
-          echo "### 📊 Resumen de la Infraestructura de CI" >> $GITHUB_STEP_SUMMARY
-          echo "| Componente | Configuración / Tarea | Resultado |" >> $GITHUB_STEP_SUMMARY
-          echo "| :--- | :--- | :---: |" >> $GITHUB_STEP_SUMMARY
-          echo "| 🦫 **Entorno Core** | Go v1.26.4 (Caché Activa) | $(status_to_emoji '${{ steps.setup-go.outcome }}') |" >> $GITHUB_STEP_SUMMARY
-          echo "| 🐘 **Base de Datos** | Postgres 17 (Docker Alpine) | $(status_to_emoji '${{ steps.db-healthy.outcome }}') |" >> $GITHUB_STEP_SUMMARY
-          echo "| 🗄️ **Base de Datos** | Creación DB goevents | $(status_to_emoji '${{ steps.db-create.outcome }}') |" >> $GITHUB_STEP_SUMMARY
-          echo "| ⚡ **ORM Migrations** | Puerto :30000 validado dinámicamente | $(status_to_emoji '${{ steps.api-start.outcome }}') |" >> $GITHUB_STEP_SUMMARY
-          echo "| 🧪 **Tests Unitarios** | Cobertura y test suite | $(status_to_emoji '${{ steps.unit-tests.outcome }}') |" >> $GITHUB_STEP_SUMMARY
-          echo "| 🛠️ **Herramientas CI** | Setup de Snyk, Gitleaks, y GolangCI | $(status_to_emoji '${{ steps.tools-install.outcome }}') |" >> $GITHUB_STEP_SUMMARY
-          echo "| 🛡️ **AppSec Suite** | Análisis de vulnerabilidades superado | $(status_to_emoji '${{ steps.appsec.outcome }}') |" >> $GITHUB_STEP_SUMMARY
+          # Build the summary clean and from scratch
+          {
+            echo "## 🚀 Goevents DevSecOps - Execution Report"
+            echo "---"
+            echo "### 📊 CI Infrastructure Summary"
+            echo "| Component | Configuration / Task | Result |"
+            echo "| :--- | :--- | :---: |"
+            echo "| 🦫 **Core Environment** | Go v1.26.4 (Cache Active) | $(status_to_emoji '${{ steps.setup-go.outcome }}') |"
+            echo "| 🐘 **Database Service** | Postgres 17 (Docker Alpine) | $(status_to_emoji '${{ steps.db-healthy.outcome }}') |"
+            echo "| 🗄️ **Database Instance** | Create goevents DB | $(status_to_emoji '${{ steps.db-create.outcome }}') |"
+            echo "| ⚡ **ORM & Migrations** | Port :30000 dynamically validated | $(status_to_emoji '${{ steps.api-start.outcome }}') |"
+            echo "| 🧪 **Unit Testing** | Coverage & test suite execution | $(status_to_emoji '${{ steps.unit-tests.outcome }}') |"
+            echo "| 🛠️ **CI Tooling Setup** | Snyk, Gitleaks, and GolangCI provisioned | $(status_to_emoji '${{ steps.tools-install.outcome }}') |"
+            echo "| 🛡️ **AppSec Suite** | Vulnerability scanning evaluation | $(status_to_emoji '${{ steps.appsec.outcome }}') |"
+          } >> $GITHUB_STEP_SUMMARY
